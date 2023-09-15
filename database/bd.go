@@ -25,5 +25,7 @@ func Init() {
 		panic("failed to connect database")
 	}
 
-	DB.AutoMigrate(&model.User{}, &model.CompanyCustomTemplate{}, &model.Company{}, &model.CompanyCustomField{}, &model.Person{}, &model.Note{}, &model.Calendar{})
+	if err := DB.AutoMigrate(&model.User{}, &model.CompanyCustomTemplate{}, &model.Company{}, &model.CompanyCustomField{}, &model.Person{}, &model.Note{}, &model.Calendar{}); err != nil {
+		panic("failed to migrate database")
+	}
 }

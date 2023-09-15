@@ -1,19 +1,19 @@
 # User
 input CreateUserInput {
-  uuid: String!
   provider: String!
   uid: String!
   name: String!
   email: String!
+  image: String!
 }
 
 # Auth
 input SignInInput {
-  uuid: String!
   provider: String!
   uid: String!
   name: String!
   email: String!
+  image: String!
 }
 
 # CompanyCustomTemplate

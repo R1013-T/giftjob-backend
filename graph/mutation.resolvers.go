@@ -12,12 +12,27 @@ import (
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input *model.CreateUserInput) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
+	user := model.User{
+		Provider: input.Provider,
+		UID:      input.UID,
+		Name:     input.Name,
+		Email:    input.Email,
+		Image:    input.Image,
+	}
+
+	result := r.DB.Create(user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &user, nil
 }
 
 // SignIn is the resolver for the signIn field.
 func (r *mutationResolver) SignIn(ctx context.Context, input *model.SignInInput) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: SignIn - signIn"))
+	return &model.User{
+		Name: "Sign In",
+	}, nil
 }
 
 // CreateTemplate is the resolver for the createTemplate field.
@@ -37,17 +52,82 @@ func (r *mutationResolver) DeleteTemplate(ctx context.Context, id string) (*mode
 
 // CreateCompany is the resolver for the createCompany field.
 func (r *mutationResolver) CreateCompany(ctx context.Context, input *model.CreateCompanyInput) (*model.Company, error) {
-	panic(fmt.Errorf("not implemented: CreateCompany - createCompany"))
+	company := model.Company{
+		Name:            input.Name,
+		Tell:            input.Tell,
+		Email:           input.Email,
+		Address:         input.Address,
+		SiteURL:         input.SiteURL,
+		Industry:        input.Industry,
+		EmployeesNumber: input.EmployeesNumber,
+		IsPinned:        input.IsPinned,
+		IsTrash:         input.IsTrash,
+	}
+
+	result := r.DB.Create(company)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &company, nil
 }
 
 // UpdateCompany is the resolver for the updateCompany field.
 func (r *mutationResolver) UpdateCompany(ctx context.Context, input *model.UpdateCompanyInput) (*model.Company, error) {
-	panic(fmt.Errorf("not implemented: UpdateCompany - updateCompany"))
+	company := &model.Company{}
+	result := r.DB.First(&company, input.ID)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	if input.Name != nil {
+		company.Name = input.Name
+	}
+	if input.Tell != nil {
+		company.Tell = input.Tell
+	}
+	if input.Email != nil {
+		company.Email = input.Email
+	}
+	if input.Address != nil {
+		company.Address = input.Address
+	}
+	if input.SiteURL != nil {
+		company.SiteURL = input.SiteURL
+	}
+	if input.Industry != nil {
+		company.Industry = input.Industry
+	}
+	if input.EmployeesNumber != nil {
+		company.EmployeesNumber = input.EmployeesNumber
+	}
+	if input.IsPinned != nil {
+		company.IsPinned = input.IsPinned
+	}
+	if input.IsTrash != nil {
+		company.IsTrash = input.IsTrash
+	}
+
+	if err := r.DB.Save(company).Error; err != nil {
+		return nil, err
+	}
+
+	return company, nil
 }
 
 // DeleteCompany is the resolver for the deleteCompany field.
 func (r *mutationResolver) DeleteCompany(ctx context.Context, id string) (*model.Company, error) {
-	panic(fmt.Errorf("not implemented: DeleteCompany - deleteCompany"))
+	company := &model.Company{}
+
+	if err := r.DB.First(&company, id).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.DB.Delete(&company).Error; err != nil {
+		return nil, err
+	}
+
+	return company, nil
 }
 
 // CreateCustomField is the resolver for the createCustomField field.

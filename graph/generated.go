@@ -74,6 +74,7 @@ type ComplexityRoot struct {
 		SiteURL             func(childComplexity int) int
 		Tell                func(childComplexity int) int
 		UpdatedAt           func(childComplexity int) int
+		UserID              func(childComplexity int) int
 	}
 
 	CompanyCustomField struct {
@@ -169,7 +170,6 @@ type ComplexityRoot struct {
 		Provider  func(childComplexity int) int
 		Templates func(childComplexity int) int
 		UID       func(childComplexity int) int
-		UUID      func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 	}
 }
@@ -401,6 +401,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Company.UpdatedAt(childComplexity), true
+
+	case "Company.user_id":
+		if e.complexity.Company.UserID == nil {
+			break
+		}
+
+		return e.complexity.Company.UserID(childComplexity), true
 
 	case "CompanyCustomField.company_id":
 		if e.complexity.CompanyCustomField.CompanyID == nil {
@@ -1050,13 +1057,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.UID(childComplexity), true
 
-	case "User.uuid":
-		if e.complexity.User.UUID == nil {
-			break
-		}
-
-		return e.complexity.User.UUID(childComplexity), true
-
 	case "User.updated_at":
 		if e.complexity.User.UpdatedAt == nil {
 			break
@@ -1185,20 +1185,20 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 var sources = []*ast.Source{
 	{Name: "../schema/input.graphqls", Input: `# User
 input CreateUserInput {
-  uuid: String!
   provider: String!
   uid: String!
   name: String!
   email: String!
+  image: String!
 }
 
 # Auth
 input SignInInput {
-  uuid: String!
   provider: String!
   uid: String!
   name: String!
   email: String!
+  image: String!
 }
 
 # CompanyCustomTemplate
@@ -1366,100 +1366,100 @@ input UpdateCalendarInput {
 	{Name: "../schema/type.graphqls", Input: `scalar JSON
 
 type User {
-  id: ID!
-  uuid: String!
-  provider: String!
-  uid: String!
-  name: String!
-  email: String!
-  image: String!
-  created_at: String
-  updated_at: String
-  companies: [Company]
-  templates: [CompanyCustomTemplate]
-  Notes: [Note]
-  Calendars: [Calendar]
-  People: [Person]
+    id: ID!
+    provider: String!
+    uid: String!
+    name: String!
+    email: String!
+    image: String!
+    created_at: String
+    updated_at: String
+    companies: [Company]
+    templates: [CompanyCustomTemplate]
+    Notes: [Note]
+    Calendars: [Calendar]
+    People: [Person]
 }
 
 type CompanyCustomTemplate {
-  id: ID!
-  name: String!
-  template: JSON!
-  is_trash: Boolean
-  user_id: ID!
-  created_at: String
-  updated_at: String
+    id: ID!
+    name: String!
+    template: JSON!
+    is_trash: Boolean
+    user_id: ID!
+    created_at: String
+    updated_at: String
 }
 
 type Company {
-  id: ID!
-  name: String
-  tell: Float
-  email: String
-  address: String
-  site_url: String
-  industry: String
-  employees_number: Float
-  is_pinned: Boolean
-  pinned_at: String
-  is_trash: Boolean
-  CompanyCustomFields: [CompanyCustomField]
-  created_at: String
-  updated_at: String
+    id: ID!
+    name: String
+    tell: Float
+    email: String
+    address: String
+    site_url: String
+    industry: String
+    employees_number: Float
+    is_pinned: Boolean
+    pinned_at: String
+    is_trash: Boolean
+    CompanyCustomFields: [CompanyCustomField]
+    user_id: ID!
+    created_at: String
+    updated_at: String
 }
 
 type CompanyCustomField {
-  id: ID!
-  group_name: String!
-  label: String!
-  value: String
-  type: String!
-  company_id: ID!
-  created_at: String
-  updated_at: String
+    id: ID!
+    group_name: String!
+    label: String!
+    value: String
+    type: String!
+    company_id: ID!
+    created_at: String
+    updated_at: String
 }
 
 type Person {
-  id: ID!
-  name: String
-  department: String
-  position: String
-  tell: Float
-  email: String
-  memo: String
-  is_trash: Boolean
-  company_id: ID!
-  user_id: ID!
-  created_at: String
-  updated_at: String
+    id: ID!
+    name: String
+    department: String
+    position: String
+    tell: Float
+    email: String
+    memo: String
+    is_trash: Boolean
+    company_id: ID!
+    user_id: ID!
+    created_at: String
+    updated_at: String
 }
 
 type Note {
-  id: ID!
-  title: String
-  content: String
-  is_pinned: Boolean
-  pinned_at: String
-  is_trash: Boolean
-  user_id: ID!
-  created_at: String
-  updated_at: String
+    id: ID!
+    title: String
+    content: String
+    is_pinned: Boolean
+    pinned_at: String
+    is_trash: Boolean
+    user_id: ID!
+    created_at: String
+    updated_at: String
 }
 
 type Calendar {
-  id: ID!
-  title: String
-  description: String
-  start_time: String
-  end_time: String
-  location: String
-  is_all_day: Boolean
-  is_from_google: Boolean
-  company_id: ID!
-  user_id: ID!
-  created_at: String
-  updated_at: String
+    id: ID!
+    title: String
+    description: String
+    start_time: String
+    end_time: String
+    location: String
+    is_all_day: Boolean
+    is_from_google: Boolean
+    company_id: ID!
+    user_id: ID!
+    created_at: String
+    updated_at: String
 }
 `, BuiltIn: false},
 }
@@ -2926,6 +2926,50 @@ func (ec *executionContext) fieldContext_Company_CompanyCustomFields(ctx context
 	return fc, nil
 }
 
+func (ec *executionContext) _Company_user_id(ctx context.Context, field graphql.CollectedField, obj *model.Company) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Company_user_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Company_user_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Company",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Company_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Company) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Company_created_at(ctx, field)
 	if err != nil {
@@ -3688,8 +3732,6 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_User_id(ctx, field)
-			case "uuid":
-				return ec.fieldContext_User_uuid(ctx, field)
 			case "provider":
 				return ec.fieldContext_User_provider(ctx, field)
 			case "uid":
@@ -3770,8 +3812,6 @@ func (ec *executionContext) fieldContext_Mutation_signIn(ctx context.Context, fi
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_User_id(ctx, field)
-			case "uuid":
-				return ec.fieldContext_User_uuid(ctx, field)
 			case "provider":
 				return ec.fieldContext_User_provider(ctx, field)
 			case "uid":
@@ -4078,6 +4118,8 @@ func (ec *executionContext) fieldContext_Mutation_createCompany(ctx context.Cont
 				return ec.fieldContext_Company_is_trash(ctx, field)
 			case "CompanyCustomFields":
 				return ec.fieldContext_Company_CompanyCustomFields(ctx, field)
+			case "user_id":
+				return ec.fieldContext_Company_user_id(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Company_created_at(ctx, field)
 			case "updated_at":
@@ -4160,6 +4202,8 @@ func (ec *executionContext) fieldContext_Mutation_updateCompany(ctx context.Cont
 				return ec.fieldContext_Company_is_trash(ctx, field)
 			case "CompanyCustomFields":
 				return ec.fieldContext_Company_CompanyCustomFields(ctx, field)
+			case "user_id":
+				return ec.fieldContext_Company_user_id(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Company_created_at(ctx, field)
 			case "updated_at":
@@ -4242,6 +4286,8 @@ func (ec *executionContext) fieldContext_Mutation_deleteCompany(ctx context.Cont
 				return ec.fieldContext_Company_is_trash(ctx, field)
 			case "CompanyCustomFields":
 				return ec.fieldContext_Company_CompanyCustomFields(ctx, field)
+			case "user_id":
+				return ec.fieldContext_Company_user_id(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Company_created_at(ctx, field)
 			case "updated_at":
@@ -6072,8 +6118,6 @@ func (ec *executionContext) fieldContext_Query_getUser(ctx context.Context, fiel
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_User_id(ctx, field)
-			case "uuid":
-				return ec.fieldContext_User_uuid(ctx, field)
 			case "provider":
 				return ec.fieldContext_User_provider(ctx, field)
 			case "uid":
@@ -6244,6 +6288,8 @@ func (ec *executionContext) fieldContext_Query_getCompany(ctx context.Context, f
 				return ec.fieldContext_Company_is_trash(ctx, field)
 			case "CompanyCustomFields":
 				return ec.fieldContext_Company_CompanyCustomFields(ctx, field)
+			case "user_id":
+				return ec.fieldContext_Company_user_id(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Company_created_at(ctx, field)
 			case "updated_at":
@@ -6667,50 +6713,6 @@ func (ec *executionContext) fieldContext_User_id(ctx context.Context, field grap
 	return fc, nil
 }
 
-func (ec *executionContext) _User_uuid(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_User_uuid(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.UUID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_User_uuid(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "User",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _User_provider(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_provider(ctx, field)
 	if err != nil {
@@ -7073,6 +7075,8 @@ func (ec *executionContext) fieldContext_User_companies(ctx context.Context, fie
 				return ec.fieldContext_Company_is_trash(ctx, field)
 			case "CompanyCustomFields":
 				return ec.fieldContext_Company_CompanyCustomFields(ctx, field)
+			case "user_id":
+				return ec.fieldContext_Company_user_id(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Company_created_at(ctx, field)
 			case "updated_at":
@@ -9623,22 +9627,13 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"uuid", "provider", "uid", "name", "email"}
+	fieldsInOrder := [...]string{"provider", "uid", "name", "email", "image"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "uuid":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("uuid"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.UUID = data
 		case "provider":
 			var err error
 
@@ -9675,6 +9670,15 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 				return it, err
 			}
 			it.Email = data
+		case "image":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Image = data
 		}
 	}
 
@@ -9688,22 +9692,13 @@ func (ec *executionContext) unmarshalInputSignInInput(ctx context.Context, obj i
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"uuid", "provider", "uid", "name", "email"}
+	fieldsInOrder := [...]string{"provider", "uid", "name", "email", "image"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "uuid":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("uuid"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.UUID = data
 		case "provider":
 			var err error
 
@@ -9740,6 +9735,15 @@ func (ec *executionContext) unmarshalInputSignInInput(ctx context.Context, obj i
 				return it, err
 			}
 			it.Email = data
+		case "image":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Image = data
 		}
 	}
 
@@ -10384,6 +10388,11 @@ func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, 
 			out.Values[i] = ec._Company_is_trash(ctx, field, obj)
 		case "CompanyCustomFields":
 			out.Values[i] = ec._Company_CompanyCustomFields(ctx, field, obj)
+		case "user_id":
+			out.Values[i] = ec._Company_user_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "created_at":
 			out.Values[i] = ec._Company_created_at(ctx, field, obj)
 		case "updated_at":
@@ -10960,11 +10969,6 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			out.Values[i] = graphql.MarshalString("User")
 		case "id":
 			out.Values[i] = ec._User_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "uuid":
-			out.Values[i] = ec._User_uuid(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

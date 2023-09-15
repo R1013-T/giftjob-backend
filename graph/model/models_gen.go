@@ -30,6 +30,7 @@ type Company struct {
 	PinnedAt            *string               `json:"pinned_at,omitempty"`
 	IsTrash             *bool                 `json:"is_trash,omitempty"`
 	CompanyCustomFields []*CompanyCustomField `json:"CompanyCustomFields,omitempty"`
+	UserID              string                `json:"user_id"`
 	CreatedAt           *string               `json:"created_at,omitempty"`
 	UpdatedAt           *string               `json:"updated_at,omitempty"`
 }
@@ -117,11 +118,11 @@ type CreateTemplateInput struct {
 }
 
 type CreateUserInput struct {
-	UUID     string `json:"uuid"`
 	Provider string `json:"provider"`
 	UID      string `json:"uid"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
+	Image    string `json:"image"`
 }
 
 type Note struct {
@@ -152,11 +153,11 @@ type Person struct {
 }
 
 type SignInInput struct {
-	UUID     string `json:"uuid"`
 	Provider string `json:"provider"`
 	UID      string `json:"uid"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
+	Image    string `json:"image"`
 }
 
 type UpdateCalendarInput struct {
@@ -224,7 +225,6 @@ type UpdateTemplateInput struct {
 
 type User struct {
 	ID        string                   `json:"id"`
-	UUID      string                   `json:"uuid"`
 	Provider  string                   `json:"provider"`
 	UID       string                   `json:"uid"`
 	Name      string                   `json:"name"`
