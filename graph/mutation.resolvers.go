@@ -15,6 +15,11 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input *model.CreateUs
 	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
 }
 
+// SignIn is the resolver for the signIn field.
+func (r *mutationResolver) SignIn(ctx context.Context, input *model.SignInInput) (*model.User, error) {
+	panic(fmt.Errorf("not implemented: SignIn - signIn"))
+}
+
 // CreateTemplate is the resolver for the createTemplate field.
 func (r *mutationResolver) CreateTemplate(ctx context.Context, input *model.CreateTemplateInput) (*model.CompanyCustomTemplate, error) {
 	panic(fmt.Errorf("not implemented: CreateTemplate - createTemplate"))

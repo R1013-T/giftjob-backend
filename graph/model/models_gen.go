@@ -151,6 +151,14 @@ type Person struct {
 	UpdatedAt  *string  `json:"updated_at,omitempty"`
 }
 
+type SignInInput struct {
+	UUID     string `json:"uuid"`
+	Provider string `json:"provider"`
+	UID      string `json:"uid"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+}
+
 type UpdateCalendarInput struct {
 	ID           string  `json:"id"`
 	Title        *string `json:"title,omitempty"`
@@ -221,6 +229,7 @@ type User struct {
 	UID       string                   `json:"uid"`
 	Name      string                   `json:"name"`
 	Email     string                   `json:"email"`
+	Image     string                   `json:"image"`
 	CreatedAt *string                  `json:"created_at,omitempty"`
 	UpdatedAt *string                  `json:"updated_at,omitempty"`
 	Companies []*Company               `json:"companies,omitempty"`
