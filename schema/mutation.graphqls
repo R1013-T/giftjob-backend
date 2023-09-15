@@ -1,6 +1,8 @@
 type Mutation {
     # User
     createUser(input: CreateUserInput): User
+    # SignIm
+    signIn(input: SignInInput): User
     # CompanyCustomTemplate
     createTemplate(input: CreateTemplateInput): CompanyCustomTemplate
     updateTemplate(input: UpdateTemplateInput): CompanyCustomTemplate

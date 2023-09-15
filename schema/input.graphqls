@@ -7,6 +7,15 @@ input CreateUserInput {
   email: String!
 }
 
+# Auth
+input SignInInput {
+  uuid: String!
+  provider: String!
+  uid: String!
+  name: String!
+  email: String!
+}
+
 # CompanyCustomTemplate
 input CreateTemplateInput {
   name: String!
