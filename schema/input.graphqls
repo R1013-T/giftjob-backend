@@ -1,0 +1,132 @@
+# User
+input CreateUserInput {
+  uuid: String!
+  provider: String!
+  uid: String!
+  name: String!
+  email: String!
+}
+
+# CompanyCustomTemplate
+input CreateTemplateInput {
+  name: String!
+  template: JSON!
+  user_id: ID!
+  is_trash: Boolean
+}
+input UpdateTemplateInput {
+  id: ID!
+  name: String
+  template: JSON
+  user_id: ID
+  is_trash: Boolean
+}
+
+# Company
+input CreateCompanyInput {
+  name: String
+  tell: Float
+  email: String
+  address: String
+  site_url: String
+  industry: String
+  employees_number: Float
+  is_pinned: Boolean
+  pinned_at: String
+  is_trash: Boolean
+}
+input UpdateCompanyInput {
+  id: ID!
+  name: String
+  tell: Float
+  email: String
+  address: String
+  site_url: String
+  industry: String
+  employees_number: Float
+  is_pinned: Boolean
+  pinned_at: String
+  is_trash: Boolean
+}
+
+# CompanyCustomField
+input CreateCustomFieldInput {
+  group_name: String!
+  label: String!
+  value: String
+  type: String!
+  company_id: ID!
+}
+input UpdateCustomFieldInput {
+  id: ID!
+  group_name: String
+  label: String
+  value: String
+  type: String
+}
+
+# Person
+input CreatePersonInput {
+  name: String
+  department: String
+  position: String
+  tell: Float
+  email: String
+  memo: String
+  is_trash: Boolean
+  company_id: ID!
+  user_id: ID!
+}
+input UpdatePersonInput {
+  id: ID!
+  name: String
+  department: String
+  position: String
+  tell: Float
+  email: String
+  memo: String
+  company_id: ID
+  is_trash: Boolean
+}
+
+# Note
+input CreateNoteInput {
+  title: String
+  content: String
+  is_pinned: Boolean
+  pinned_at: String
+  is_trash: Boolean
+  user_id: ID!
+}
+input UpdateNoteInput {
+  id: ID!
+  title: String
+  content: String
+  is_pinned: Boolean
+  pinned_at: String
+  is_trash: Boolean
+}
+
+# Calendar
+input CreateCalendarInput {
+  title: String
+  description: String
+  start_time: String
+  end_time: String
+  location: String
+  is_all_day: Boolean
+  is_from_google: Boolean
+  company_id: ID!
+  user_id: ID!
+}
+input UpdateCalendarInput {
+  id: ID!
+  title: String
+  description: String
+  start_time: String
+  end_time: String
+  location: String
+  is_all_day: Boolean
+  is_from_google: Boolean
+  company_id: ID
+}

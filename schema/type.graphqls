@@ -1,0 +1,97 @@
+scalar JSON
+
+type User {
+  id: ID!
+  uuid: String!
+  provider: String!
+  uid: String!
+  name: String!
+  email: String!
+  created_at: String
+  updated_at: String
+  companies: [Company]
+  templates: [CompanyCustomTemplate]
+  Notes: [Note]
+  Calendars: [Calendar]
+  People: [Person]
+}
+
+type CompanyCustomTemplate {
+  id: ID!
+  name: String!
+  template: JSON!
+  is_trash: Boolean
+  user_id: ID!
+  created_at: String
+  updated_at: String
+}
+
+type Company {
+  id: ID!
+  name: String
+  tell: Float
+  email: String
+  address: String
+  site_url: String
+  industry: String
+  employees_number: Float
+  is_pinned: Boolean
+  pinned_at: String
+  is_trash: Boolean
+  CompanyCustomFields: [CompanyCustomField]
+  created_at: String
+  updated_at: String
+}
+
+type CompanyCustomField {
+  id: ID!
+  group_name: String!
+  label: String!
+  value: String
+  type: String!
+  company_id: ID!
+  created_at: String
+  updated_at: String
+}
+
+type Person {
+  id: ID!
+  name: String
+  department: String
+  position: String
+  tell: Float
+  email: String
+  memo: String
+  is_trash: Boolean
+  company_id: ID!
+  user_id: ID!
+  created_at: String
+  updated_at: String
+}
+
+type Note {
+  id: ID!
+  title: String
+  content: String
+  is_pinned: Boolean
+  pinned_at: String
+  is_trash: Boolean
+  user_id: ID!
+  created_at: String
+  updated_at: String
+}
+
+type Calendar {
+  id: ID!
+  title: String
+  description: String
+  start_time: String
+  end_time: String
+  location: String
+  is_all_day: Boolean
+  is_from_google: Boolean
+  company_id: ID!
+  user_id: ID!
+  created_at: String
+  updated_at: String
+}

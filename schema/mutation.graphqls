@@ -1,0 +1,28 @@
+type Mutation {
+    # User
+    createUser(input: CreateUserInput): User
+    # CompanyCustomTemplate
+    createTemplate(input: CreateTemplateInput): CompanyCustomTemplate
+    updateTemplate(input: UpdateTemplateInput): CompanyCustomTemplate
+    deleteTemplate(id: ID!): CompanyCustomTemplate
+    # Company
+    createCompany(input: CreateCompanyInput): Company
+    updateCompany(input: UpdateCompanyInput): Company
+    deleteCompany(id: ID!): Company
+    # CompanyCustomField
+    createCustomField(input: CreateCustomFieldInput): CompanyCustomField
+    updateCustomField(input: UpdateCustomFieldInput): CompanyCustomField
+    deleteCustomField(id: ID!): CompanyCustomField
+    # Person
+    createPerson(input: CreatePersonInput): Person
+    updatePerson(input: UpdatePersonInput): Person
+    deletePerson(id: ID!): Person
+    # Note
+    createNoteForPerson(input: CreateNoteInput): Note
+    updateNoteForPerson(input: UpdateNoteInput): Note
+    deleteNoteForPerson(id: ID!): Note
+    # Calendar
+    createCalendar(input: CreateCalendarInput): Calendar
+    updateCalendar(input: UpdateCalendarInput): Calendar
+    deleteCalendar(id: ID!): Calendar
+}

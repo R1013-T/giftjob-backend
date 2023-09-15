@@ -1,0 +1,8 @@
+type Query {
+    getUser(id: ID!): User
+    getTemplate(id: ID!): CompanyCustomTemplate
+    getCompany(id: ID!): Company
+    getPerson(id: ID!): Person
+    getNote(id: ID!): Note
+    getCalendar(id: ID!): Calendar
+}
