@@ -20,7 +20,7 @@ type Calendar struct {
 type Company struct {
 	ID                  string                `json:"id"`
 	Name                *string               `json:"name,omitempty"`
-	Tell                *float64              `json:"tell,omitempty"`
+	Tell                *string               `json:"tell,omitempty"`
 	Email               *string               `json:"email,omitempty"`
 	Address             *string               `json:"address,omitempty"`
 	SiteURL             *string               `json:"site_url,omitempty"`
@@ -70,7 +70,7 @@ type CreateCalendarInput struct {
 
 type CreateCompanyInput struct {
 	Name            *string  `json:"name,omitempty"`
-	Tell            *float64 `json:"tell,omitempty"`
+	Tell            *string  `json:"tell,omitempty"`
 	Email           *string  `json:"email,omitempty"`
 	Address         *string  `json:"address,omitempty"`
 	SiteURL         *string  `json:"site_url,omitempty"`
@@ -79,6 +79,7 @@ type CreateCompanyInput struct {
 	IsPinned        *bool    `json:"is_pinned,omitempty"`
 	PinnedAt        *string  `json:"pinned_at,omitempty"`
 	IsTrash         *bool    `json:"is_trash,omitempty"`
+	UserID          string   `json:"user_id"`
 }
 
 type CreateCustomFieldInput struct {
@@ -175,7 +176,7 @@ type UpdateCalendarInput struct {
 type UpdateCompanyInput struct {
 	ID              string   `json:"id"`
 	Name            *string  `json:"name,omitempty"`
-	Tell            *float64 `json:"tell,omitempty"`
+	Tell            *string  `json:"tell,omitempty"`
 	Email           *string  `json:"email,omitempty"`
 	Address         *string  `json:"address,omitempty"`
 	SiteURL         *string  `json:"site_url,omitempty"`

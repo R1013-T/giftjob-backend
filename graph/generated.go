@@ -1219,7 +1219,7 @@ input UpdateTemplateInput {
 # Company
 input CreateCompanyInput {
   name: String
-  tell: Float
+  tell: String
   email: String
   address: String
   site_url: String
@@ -1228,11 +1228,12 @@ input CreateCompanyInput {
   is_pinned: Boolean
   pinned_at: String
   is_trash: Boolean
+  user_id: ID!
 }
 input UpdateCompanyInput {
   id: ID!
   name: String
-  tell: Float
+  tell: String
   email: String
   address: String
   site_url: String
@@ -1394,7 +1395,7 @@ type CompanyCustomTemplate {
 type Company {
     id: ID!
     name: String
-    tell: Float
+    tell: String
     email: String
     address: String
     site_url: String
@@ -2521,9 +2522,9 @@ func (ec *executionContext) _Company_tell(ctx context.Context, field graphql.Col
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*float64)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Company_tell(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2533,7 +2534,7 @@ func (ec *executionContext) fieldContext_Company_tell(ctx context.Context, field
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Float does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -9221,7 +9222,7 @@ func (ec *executionContext) unmarshalInputCreateCompanyInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "tell", "email", "address", "site_url", "industry", "employees_number", "is_pinned", "pinned_at", "is_trash"}
+	fieldsInOrder := [...]string{"name", "tell", "email", "address", "site_url", "industry", "employees_number", "is_pinned", "pinned_at", "is_trash", "user_id"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -9241,7 +9242,7 @@ func (ec *executionContext) unmarshalInputCreateCompanyInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tell"))
-			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9318,6 +9319,15 @@ func (ec *executionContext) unmarshalInputCreateCompanyInput(ctx context.Context
 				return it, err
 			}
 			it.IsTrash = data
+		case "user_id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user_id"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserID = data
 		}
 	}
 
@@ -9887,7 +9897,7 @@ func (ec *executionContext) unmarshalInputUpdateCompanyInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tell"))
-			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}

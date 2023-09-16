@@ -34,7 +34,7 @@ input UpdateTemplateInput {
 # Company
 input CreateCompanyInput {
   name: String
-  tell: Float
+  tell: String
   email: String
   address: String
   site_url: String
@@ -43,11 +43,12 @@ input CreateCompanyInput {
   is_pinned: Boolean
   pinned_at: String
   is_trash: Boolean
+  user_id: ID!
 }
 input UpdateCompanyInput {
   id: ID!
   name: String
-  tell: Float
+  tell: String
   email: String
   address: String
   site_url: String

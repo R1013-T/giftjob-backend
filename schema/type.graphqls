@@ -29,7 +29,7 @@ type CompanyCustomTemplate {
 type Company {
     id: ID!
     name: String
-    tell: Float
+    tell: String
     email: String
     address: String
     site_url: String

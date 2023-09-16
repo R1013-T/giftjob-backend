@@ -8,11 +8,14 @@ import (
 	"context"
 	"fmt"
 	"giftjob-backend/graph/model"
+
+	"github.com/google/uuid"
 )
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input *model.CreateUserInput) (*model.User, error) {
 	user := model.User{
+		ID:       uuid.New().String(),
 		Provider: input.Provider,
 		UID:      input.UID,
 		Name:     input.Name,
@@ -53,6 +56,7 @@ func (r *mutationResolver) DeleteTemplate(ctx context.Context, id string) (*mode
 // CreateCompany is the resolver for the createCompany field.
 func (r *mutationResolver) CreateCompany(ctx context.Context, input *model.CreateCompanyInput) (*model.Company, error) {
 	company := model.Company{
+		ID:              uuid.New().String(),
 		Name:            input.Name,
 		Tell:            input.Tell,
 		Email:           input.Email,
@@ -62,6 +66,7 @@ func (r *mutationResolver) CreateCompany(ctx context.Context, input *model.Creat
 		EmployeesNumber: input.EmployeesNumber,
 		IsPinned:        input.IsPinned,
 		IsTrash:         input.IsTrash,
+		UserID:          input.UserID,
 	}
 
 	result := r.DB.Create(company)
