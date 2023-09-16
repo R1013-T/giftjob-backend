@@ -18,6 +18,8 @@ func Init() {
 	dbname := utils.Getenv("DB_NAME")
 	port := utils.Getenv("DB_PORT")
 
+	//DATABASE_URL := utils.Getenv("DATABASE_URL")
+
 	url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", user, password, host, port, dbname)
 
 	DB, err = gorm.Open(postgres.Open(url), &gorm.Config{})
