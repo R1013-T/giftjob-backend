@@ -2,19 +2,23 @@
 
 package model
 
+import (
+	"time"
+)
+
 type Calendar struct {
-	ID           string  `json:"id"`
-	Title        *string `json:"title,omitempty"`
-	Description  *string `json:"description,omitempty"`
-	StartTime    *string `json:"start_time,omitempty"`
-	EndTime      *string `json:"end_time,omitempty"`
-	Location     *string `json:"location,omitempty"`
-	IsAllDay     *bool   `json:"is_all_day,omitempty"`
-	IsFromGoogle *bool   `json:"is_from_google,omitempty"`
-	CompanyID    string  `json:"company_id"`
-	UserID       string  `json:"user_id"`
-	CreatedAt    *string `json:"created_at,omitempty"`
-	UpdatedAt    *string `json:"updated_at,omitempty"`
+	ID           string    `json:"id"`
+	Title        *string   `json:"title,omitempty"`
+	Description  *string   `json:"description,omitempty"`
+	StartTime    *string   `json:"start_time,omitempty"`
+	EndTime      *string   `json:"end_time,omitempty"`
+	Location     *string   `json:"location,omitempty"`
+	IsAllDay     *bool     `json:"is_all_day,omitempty"`
+	IsFromGoogle *bool     `json:"is_from_google,omitempty"`
+	CompanyID    string    `json:"company_id"`
+	UserID       string    `json:"user_id"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type Company struct {
@@ -31,29 +35,38 @@ type Company struct {
 	IsTrash             *bool                 `json:"is_trash,omitempty"`
 	CompanyCustomFields []*CompanyCustomField `json:"CompanyCustomFields,omitempty"`
 	UserID              string                `json:"user_id"`
-	CreatedAt           *string               `json:"created_at,omitempty"`
-	UpdatedAt           *string               `json:"updated_at,omitempty"`
+	CreatedAt           time.Time             `json:"created_at"`
+	UpdatedAt           time.Time             `json:"updated_at"`
 }
 
 type CompanyCustomField struct {
-	ID        string  `json:"id"`
-	GroupName string  `json:"group_name"`
-	Label     string  `json:"label"`
-	Value     *string `json:"value,omitempty"`
-	Type      string  `json:"type"`
-	CompanyID string  `json:"company_id"`
-	CreatedAt *string `json:"created_at,omitempty"`
-	UpdatedAt *string `json:"updated_at,omitempty"`
+	ID        string    `json:"id"`
+	GroupName string    `json:"group_name"`
+	Label     string    `json:"label"`
+	Value     *string   `json:"value,omitempty"`
+	Type      string    `json:"type"`
+	CompanyID string    `json:"company_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type CompanyCustomTemplate struct {
-	ID        string  `json:"id"`
-	Name      string  `json:"name"`
-	Template  string  `json:"template"`
-	IsTrash   *bool   `json:"is_trash,omitempty"`
-	UserID    string  `json:"user_id"`
-	CreatedAt *string `json:"created_at,omitempty"`
-	UpdatedAt *string `json:"updated_at,omitempty"`
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	IsTrash   *bool     `json:"is_trash,omitempty"`
+	UserID    string    `json:"user_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type CompanyCustomTemplateField struct {
+	ID         string    `json:"id"`
+	GroupName  string    `json:"group_name"`
+	Label      string    `json:"label"`
+	Type       string    `json:"type"`
+	TemplateID string    `json:"template_id"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type CreateCalendarInput struct {
@@ -111,11 +124,18 @@ type CreatePersonInput struct {
 	UserID     string   `json:"user_id"`
 }
 
+type CreateTemplateFieldInput struct {
+	GroupName  string `json:"group_name"`
+	Label      string `json:"label"`
+	Type       string `json:"type"`
+	TemplateID string `json:"template_id"`
+	UserID     string `json:"user_id"`
+}
+
 type CreateTemplateInput struct {
-	Name     string `json:"name"`
-	Template string `json:"template"`
-	UserID   string `json:"user_id"`
-	IsTrash  *bool  `json:"is_trash,omitempty"`
+	Name    string `json:"name"`
+	UserID  string `json:"user_id"`
+	IsTrash *bool  `json:"is_trash,omitempty"`
 }
 
 type CreateUserInput struct {
@@ -127,30 +147,30 @@ type CreateUserInput struct {
 }
 
 type Note struct {
-	ID        string  `json:"id"`
-	Title     *string `json:"title,omitempty"`
-	Content   *string `json:"content,omitempty"`
-	IsPinned  *bool   `json:"is_pinned,omitempty"`
-	PinnedAt  *string `json:"pinned_at,omitempty"`
-	IsTrash   *bool   `json:"is_trash,omitempty"`
-	UserID    string  `json:"user_id"`
-	CreatedAt *string `json:"created_at,omitempty"`
-	UpdatedAt *string `json:"updated_at,omitempty"`
+	ID        string    `json:"id"`
+	Title     *string   `json:"title,omitempty"`
+	Content   *string   `json:"content,omitempty"`
+	IsPinned  *bool     `json:"is_pinned,omitempty"`
+	PinnedAt  *string   `json:"pinned_at,omitempty"`
+	IsTrash   *bool     `json:"is_trash,omitempty"`
+	UserID    string    `json:"user_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Person struct {
-	ID         string   `json:"id"`
-	Name       *string  `json:"name,omitempty"`
-	Department *string  `json:"department,omitempty"`
-	Position   *string  `json:"position,omitempty"`
-	Tell       *float64 `json:"tell,omitempty"`
-	Email      *string  `json:"email,omitempty"`
-	Memo       *string  `json:"memo,omitempty"`
-	IsTrash    *bool    `json:"is_trash,omitempty"`
-	CompanyID  string   `json:"company_id"`
-	UserID     string   `json:"user_id"`
-	CreatedAt  *string  `json:"created_at,omitempty"`
-	UpdatedAt  *string  `json:"updated_at,omitempty"`
+	ID         string    `json:"id"`
+	Name       *string   `json:"name,omitempty"`
+	Department *string   `json:"department,omitempty"`
+	Position   *string   `json:"position,omitempty"`
+	Tell       *float64  `json:"tell,omitempty"`
+	Email      *string   `json:"email,omitempty"`
+	Memo       *string   `json:"memo,omitempty"`
+	IsTrash    *bool     `json:"is_trash,omitempty"`
+	CompanyID  string    `json:"company_id"`
+	UserID     string    `json:"user_id"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type SignInInput struct {
@@ -216,12 +236,18 @@ type UpdatePersonInput struct {
 	IsTrash    *bool    `json:"is_trash,omitempty"`
 }
 
+type UpdateTemplateFieldInput struct {
+	ID         string  `json:"id"`
+	Label      *string `json:"label,omitempty"`
+	Type       *string `json:"type,omitempty"`
+	TemplateID *string `json:"template_id,omitempty"`
+}
+
 type UpdateTemplateInput struct {
-	ID       string  `json:"id"`
-	Name     *string `json:"name,omitempty"`
-	Template *string `json:"template,omitempty"`
-	UserID   *string `json:"user_id,omitempty"`
-	IsTrash  *bool   `json:"is_trash,omitempty"`
+	ID      string  `json:"id"`
+	Name    *string `json:"name,omitempty"`
+	UserID  *string `json:"user_id,omitempty"`
+	IsTrash *bool   `json:"is_trash,omitempty"`
 }
 
 type User struct {
@@ -231,8 +257,8 @@ type User struct {
 	Name      string                   `json:"name"`
 	Email     string                   `json:"email"`
 	Image     string                   `json:"image"`
-	CreatedAt *string                  `json:"created_at,omitempty"`
-	UpdatedAt *string                  `json:"updated_at,omitempty"`
+	CreatedAt time.Time                `json:"created_at"`
+	UpdatedAt time.Time                `json:"updated_at"`
 	Companies []*Company               `json:"companies,omitempty"`
 	Templates []*CompanyCustomTemplate `json:"templates,omitempty"`
 	Notes     []*Note                  `json:"Notes,omitempty"`

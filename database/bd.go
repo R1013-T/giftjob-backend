@@ -18,8 +18,6 @@ func Init() {
 	dbname := utils.Getenv("DB_NAME")
 	port := utils.Getenv("DB_PORT")
 
-	//DATABASE_URL := utils.Getenv("DATABASE_URL")
-
 	url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", user, password, host, port, dbname)
 
 	DB, err = gorm.Open(postgres.Open(url), &gorm.Config{})
@@ -27,7 +25,7 @@ func Init() {
 		panic("failed to connect database")
 	}
 
-	if err := DB.AutoMigrate(&model.User{}, &model.CompanyCustomTemplate{}, &model.Company{}, &model.CompanyCustomField{}, &model.Person{}, &model.Note{}, &model.Calendar{}); err != nil {
+	if err := DB.AutoMigrate(&model.User{}, &model.CompanyCustomTemplate{}, &model.CompanyCustomTemplateField{}, &model.Company{}, &model.CompanyCustomField{}, &model.Person{}, &model.Note{}, &model.Calendar{}); err != nil {
 		panic("failed to migrate database")
 	}
 }

@@ -19,16 +19,29 @@ input SignInInput {
 # CompanyCustomTemplate
 input CreateTemplateInput {
   name: String!
-  template: JSON!
   user_id: ID!
   is_trash: Boolean
 }
 input UpdateTemplateInput {
   id: ID!
   name: String
-  template: JSON
   user_id: ID
   is_trash: Boolean
+}
+
+#CompanyCustomTemplateField
+input CreateTemplateFieldInput {
+  group_name: String!
+  label: String!
+  type: String!
+  template_id: ID!
+  user_id: ID!
+}
+input UpdateTemplateFieldInput {
+  id: ID!
+  label: String
+  type: String
+  template_id: ID
 }
 
 # Company

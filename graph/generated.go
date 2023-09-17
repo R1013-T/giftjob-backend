@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -93,9 +94,18 @@ type ComplexityRoot struct {
 		ID        func(childComplexity int) int
 		IsTrash   func(childComplexity int) int
 		Name      func(childComplexity int) int
-		Template  func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		UserID    func(childComplexity int) int
+	}
+
+	CompanyCustomTemplateField struct {
+		CreatedAt  func(childComplexity int) int
+		GroupName  func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Label      func(childComplexity int) int
+		TemplateID func(childComplexity int) int
+		Type       func(childComplexity int) int
+		UpdatedAt  func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -105,6 +115,7 @@ type ComplexityRoot struct {
 		CreateNoteForPerson func(childComplexity int, input *model.CreateNoteInput) int
 		CreatePerson        func(childComplexity int, input *model.CreatePersonInput) int
 		CreateTemplate      func(childComplexity int, input *model.CreateTemplateInput) int
+		CreateTemplateField func(childComplexity int, input *model.CreateTemplateFieldInput) int
 		CreateUser          func(childComplexity int, input *model.CreateUserInput) int
 		DeleteCalendar      func(childComplexity int, id string) int
 		DeleteCompany       func(childComplexity int, id string) int
@@ -112,6 +123,7 @@ type ComplexityRoot struct {
 		DeleteNoteForPerson func(childComplexity int, id string) int
 		DeletePerson        func(childComplexity int, id string) int
 		DeleteTemplate      func(childComplexity int, id string) int
+		DeleteTemplateField func(childComplexity int, id string) int
 		SignIn              func(childComplexity int, input *model.SignInInput) int
 		UpdateCalendar      func(childComplexity int, input *model.UpdateCalendarInput) int
 		UpdateCompany       func(childComplexity int, input *model.UpdateCompanyInput) int
@@ -119,6 +131,7 @@ type ComplexityRoot struct {
 		UpdateNoteForPerson func(childComplexity int, input *model.UpdateNoteInput) int
 		UpdatePerson        func(childComplexity int, input *model.UpdatePersonInput) int
 		UpdateTemplate      func(childComplexity int, input *model.UpdateTemplateInput) int
+		UpdateTemplateField func(childComplexity int, input *model.UpdateTemplateFieldInput) int
 	}
 
 	Note struct {
@@ -180,6 +193,9 @@ type MutationResolver interface {
 	CreateTemplate(ctx context.Context, input *model.CreateTemplateInput) (*model.CompanyCustomTemplate, error)
 	UpdateTemplate(ctx context.Context, input *model.UpdateTemplateInput) (*model.CompanyCustomTemplate, error)
 	DeleteTemplate(ctx context.Context, id string) (*model.CompanyCustomTemplate, error)
+	CreateTemplateField(ctx context.Context, input *model.CreateTemplateFieldInput) (*model.CompanyCustomTemplateField, error)
+	UpdateTemplateField(ctx context.Context, input *model.UpdateTemplateFieldInput) (*model.CompanyCustomTemplateField, error)
+	DeleteTemplateField(ctx context.Context, id string) (*model.CompanyCustomTemplateField, error)
 	CreateCompany(ctx context.Context, input *model.CreateCompanyInput) (*model.Company, error)
 	UpdateCompany(ctx context.Context, input *model.UpdateCompanyInput) (*model.Company, error)
 	DeleteCompany(ctx context.Context, id string) (*model.Company, error)
@@ -493,13 +509,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CompanyCustomTemplate.Name(childComplexity), true
 
-	case "CompanyCustomTemplate.template":
-		if e.complexity.CompanyCustomTemplate.Template == nil {
-			break
-		}
-
-		return e.complexity.CompanyCustomTemplate.Template(childComplexity), true
-
 	case "CompanyCustomTemplate.updated_at":
 		if e.complexity.CompanyCustomTemplate.UpdatedAt == nil {
 			break
@@ -513,6 +522,55 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CompanyCustomTemplate.UserID(childComplexity), true
+
+	case "CompanyCustomTemplateField.created_at":
+		if e.complexity.CompanyCustomTemplateField.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.CompanyCustomTemplateField.CreatedAt(childComplexity), true
+
+	case "CompanyCustomTemplateField.group_name":
+		if e.complexity.CompanyCustomTemplateField.GroupName == nil {
+			break
+		}
+
+		return e.complexity.CompanyCustomTemplateField.GroupName(childComplexity), true
+
+	case "CompanyCustomTemplateField.id":
+		if e.complexity.CompanyCustomTemplateField.ID == nil {
+			break
+		}
+
+		return e.complexity.CompanyCustomTemplateField.ID(childComplexity), true
+
+	case "CompanyCustomTemplateField.label":
+		if e.complexity.CompanyCustomTemplateField.Label == nil {
+			break
+		}
+
+		return e.complexity.CompanyCustomTemplateField.Label(childComplexity), true
+
+	case "CompanyCustomTemplateField.template_id":
+		if e.complexity.CompanyCustomTemplateField.TemplateID == nil {
+			break
+		}
+
+		return e.complexity.CompanyCustomTemplateField.TemplateID(childComplexity), true
+
+	case "CompanyCustomTemplateField.type":
+		if e.complexity.CompanyCustomTemplateField.Type == nil {
+			break
+		}
+
+		return e.complexity.CompanyCustomTemplateField.Type(childComplexity), true
+
+	case "CompanyCustomTemplateField.updated_at":
+		if e.complexity.CompanyCustomTemplateField.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.CompanyCustomTemplateField.UpdatedAt(childComplexity), true
 
 	case "Mutation.createCalendar":
 		if e.complexity.Mutation.CreateCalendar == nil {
@@ -585,6 +643,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateTemplate(childComplexity, args["input"].(*model.CreateTemplateInput)), true
+
+	case "Mutation.createTemplateField":
+		if e.complexity.Mutation.CreateTemplateField == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createTemplateField_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateTemplateField(childComplexity, args["input"].(*model.CreateTemplateFieldInput)), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -670,6 +740,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteTemplate(childComplexity, args["id"].(string)), true
 
+	case "Mutation.deleteTemplateField":
+		if e.complexity.Mutation.DeleteTemplateField == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteTemplateField_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteTemplateField(childComplexity, args["id"].(string)), true
+
 	case "Mutation.signIn":
 		if e.complexity.Mutation.SignIn == nil {
 			break
@@ -753,6 +835,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateTemplate(childComplexity, args["input"].(*model.UpdateTemplateInput)), true
+
+	case "Mutation.updateTemplateField":
+		if e.complexity.Mutation.UpdateTemplateField == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateTemplateField_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateTemplateField(childComplexity, args["input"].(*model.UpdateTemplateFieldInput)), true
 
 	case "Note.content":
 		if e.complexity.Note.Content == nil {
@@ -1077,6 +1171,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreateCustomFieldInput,
 		ec.unmarshalInputCreateNoteInput,
 		ec.unmarshalInputCreatePersonInput,
+		ec.unmarshalInputCreateTemplateFieldInput,
 		ec.unmarshalInputCreateTemplateInput,
 		ec.unmarshalInputCreateUserInput,
 		ec.unmarshalInputSignInInput,
@@ -1085,6 +1180,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputUpdateCustomFieldInput,
 		ec.unmarshalInputUpdateNoteInput,
 		ec.unmarshalInputUpdatePersonInput,
+		ec.unmarshalInputUpdateTemplateFieldInput,
 		ec.unmarshalInputUpdateTemplateInput,
 	)
 	first := true
@@ -1204,16 +1300,29 @@ input SignInInput {
 # CompanyCustomTemplate
 input CreateTemplateInput {
   name: String!
-  template: JSON!
   user_id: ID!
   is_trash: Boolean
 }
 input UpdateTemplateInput {
   id: ID!
   name: String
-  template: JSON
   user_id: ID
   is_trash: Boolean
+}
+
+#CompanyCustomTemplateField
+input CreateTemplateFieldInput {
+  group_name: String!
+  label: String!
+  type: String!
+  template_id: ID!
+  user_id: ID!
+}
+input UpdateTemplateFieldInput {
+  id: ID!
+  label: String
+  type: String
+  template_id: ID
 }
 
 # Company
@@ -1335,6 +1444,10 @@ input UpdateCalendarInput {
     createTemplate(input: CreateTemplateInput): CompanyCustomTemplate
     updateTemplate(input: UpdateTemplateInput): CompanyCustomTemplate
     deleteTemplate(id: ID!): CompanyCustomTemplate
+    # CompanyCustomTemplateField
+    createTemplateField(input: CreateTemplateFieldInput): CompanyCustomTemplateField
+    updateTemplateField(input: UpdateTemplateFieldInput): CompanyCustomTemplateField
+    deleteTemplateField(id: ID!): CompanyCustomTemplateField
     # Company
     createCompany(input: CreateCompanyInput): Company
     updateCompany(input: UpdateCompanyInput): Company
@@ -1365,6 +1478,7 @@ input UpdateCalendarInput {
     getCalendar(id: ID!): Calendar
 }`, BuiltIn: false},
 	{Name: "../schema/type.graphqls", Input: `scalar JSON
+scalar Time
 
 type User {
     id: ID!
@@ -1373,8 +1487,8 @@ type User {
     name: String!
     email: String!
     image: String!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
     companies: [Company]
     templates: [CompanyCustomTemplate]
     Notes: [Note]
@@ -1385,11 +1499,20 @@ type User {
 type CompanyCustomTemplate {
     id: ID!
     name: String!
-    template: JSON!
     is_trash: Boolean
     user_id: ID!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
+}
+
+type CompanyCustomTemplateField {
+    id: ID!
+    group_name: String!
+    label: String!
+    type: String!
+    template_id: ID!
+    created_at: Time!
+    updated_at: Time!
 }
 
 type Company {
@@ -1406,8 +1529,8 @@ type Company {
     is_trash: Boolean
     CompanyCustomFields: [CompanyCustomField]
     user_id: ID!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
 }
 
 type CompanyCustomField {
@@ -1417,8 +1540,8 @@ type CompanyCustomField {
     value: String
     type: String!
     company_id: ID!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
 }
 
 type Person {
@@ -1432,8 +1555,8 @@ type Person {
     is_trash: Boolean
     company_id: ID!
     user_id: ID!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
 }
 
 type Note {
@@ -1444,8 +1567,8 @@ type Note {
     pinned_at: String
     is_trash: Boolean
     user_id: ID!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
 }
 
 type Calendar {
@@ -1459,8 +1582,8 @@ type Calendar {
     is_from_google: Boolean
     company_id: ID!
     user_id: ID!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
 }
 `, BuiltIn: false},
 }
@@ -1537,6 +1660,21 @@ func (ec *executionContext) field_Mutation_createPerson_args(ctx context.Context
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOCreatePersonInput2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐCreatePersonInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createTemplateField_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.CreateTemplateFieldInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOCreateTemplateFieldInput2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐCreateTemplateFieldInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1650,6 +1788,21 @@ func (ec *executionContext) field_Mutation_deletePerson_args(ctx context.Context
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deleteTemplateField_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_deleteTemplate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1747,6 +1900,21 @@ func (ec *executionContext) field_Mutation_updatePerson_args(ctx context.Context
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOUpdatePersonInput2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐUpdatePersonInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateTemplateField_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.UpdateTemplateFieldInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOUpdateTemplateFieldInput2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐUpdateTemplateFieldInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2353,11 +2521,14 @@ func (ec *executionContext) _Calendar_created_at(ctx context.Context, field grap
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Calendar_created_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2367,7 +2538,7 @@ func (ec *executionContext) fieldContext_Calendar_created_at(ctx context.Context
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2394,11 +2565,14 @@ func (ec *executionContext) _Calendar_updated_at(ctx context.Context, field grap
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Calendar_updated_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2408,7 +2582,7 @@ func (ec *executionContext) fieldContext_Calendar_updated_at(ctx context.Context
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2992,11 +3166,14 @@ func (ec *executionContext) _Company_created_at(ctx context.Context, field graph
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Company_created_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3006,7 +3183,7 @@ func (ec *executionContext) fieldContext_Company_created_at(ctx context.Context,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3033,11 +3210,14 @@ func (ec *executionContext) _Company_updated_at(ctx context.Context, field graph
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Company_updated_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3047,7 +3227,7 @@ func (ec *executionContext) fieldContext_Company_updated_at(ctx context.Context,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3335,11 +3515,14 @@ func (ec *executionContext) _CompanyCustomField_created_at(ctx context.Context, 
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_CompanyCustomField_created_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3349,7 +3532,7 @@ func (ec *executionContext) fieldContext_CompanyCustomField_created_at(ctx conte
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3376,11 +3559,14 @@ func (ec *executionContext) _CompanyCustomField_updated_at(ctx context.Context, 
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_CompanyCustomField_updated_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3390,7 +3576,7 @@ func (ec *executionContext) fieldContext_CompanyCustomField_updated_at(ctx conte
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3479,50 +3665,6 @@ func (ec *executionContext) fieldContext_CompanyCustomTemplate_name(ctx context.
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _CompanyCustomTemplate_template(ctx context.Context, field graphql.CollectedField, obj *model.CompanyCustomTemplate) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_CompanyCustomTemplate_template(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Template, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNJSON2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_CompanyCustomTemplate_template(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CompanyCustomTemplate",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type JSON does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3634,11 +3776,14 @@ func (ec *executionContext) _CompanyCustomTemplate_created_at(ctx context.Contex
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_CompanyCustomTemplate_created_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3648,7 +3793,7 @@ func (ec *executionContext) fieldContext_CompanyCustomTemplate_created_at(ctx co
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3675,11 +3820,14 @@ func (ec *executionContext) _CompanyCustomTemplate_updated_at(ctx context.Contex
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_CompanyCustomTemplate_updated_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3689,7 +3837,315 @@ func (ec *executionContext) fieldContext_CompanyCustomTemplate_updated_at(ctx co
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CompanyCustomTemplateField_id(ctx context.Context, field graphql.CollectedField, obj *model.CompanyCustomTemplateField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CompanyCustomTemplateField_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CompanyCustomTemplateField_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CompanyCustomTemplateField",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CompanyCustomTemplateField_group_name(ctx context.Context, field graphql.CollectedField, obj *model.CompanyCustomTemplateField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CompanyCustomTemplateField_group_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GroupName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CompanyCustomTemplateField_group_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CompanyCustomTemplateField",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CompanyCustomTemplateField_label(ctx context.Context, field graphql.CollectedField, obj *model.CompanyCustomTemplateField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CompanyCustomTemplateField_label(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Label, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CompanyCustomTemplateField_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CompanyCustomTemplateField",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CompanyCustomTemplateField_type(ctx context.Context, field graphql.CollectedField, obj *model.CompanyCustomTemplateField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CompanyCustomTemplateField_type(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CompanyCustomTemplateField_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CompanyCustomTemplateField",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CompanyCustomTemplateField_template_id(ctx context.Context, field graphql.CollectedField, obj *model.CompanyCustomTemplateField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CompanyCustomTemplateField_template_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TemplateID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CompanyCustomTemplateField_template_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CompanyCustomTemplateField",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CompanyCustomTemplateField_created_at(ctx context.Context, field graphql.CollectedField, obj *model.CompanyCustomTemplateField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CompanyCustomTemplateField_created_at(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CompanyCustomTemplateField_created_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CompanyCustomTemplateField",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CompanyCustomTemplateField_updated_at(ctx context.Context, field graphql.CollectedField, obj *model.CompanyCustomTemplateField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CompanyCustomTemplateField_updated_at(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CompanyCustomTemplateField_updated_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CompanyCustomTemplateField",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3895,8 +4351,6 @@ func (ec *executionContext) fieldContext_Mutation_createTemplate(ctx context.Con
 				return ec.fieldContext_CompanyCustomTemplate_id(ctx, field)
 			case "name":
 				return ec.fieldContext_CompanyCustomTemplate_name(ctx, field)
-			case "template":
-				return ec.fieldContext_CompanyCustomTemplate_template(ctx, field)
 			case "is_trash":
 				return ec.fieldContext_CompanyCustomTemplate_is_trash(ctx, field)
 			case "user_id":
@@ -3963,8 +4417,6 @@ func (ec *executionContext) fieldContext_Mutation_updateTemplate(ctx context.Con
 				return ec.fieldContext_CompanyCustomTemplate_id(ctx, field)
 			case "name":
 				return ec.fieldContext_CompanyCustomTemplate_name(ctx, field)
-			case "template":
-				return ec.fieldContext_CompanyCustomTemplate_template(ctx, field)
 			case "is_trash":
 				return ec.fieldContext_CompanyCustomTemplate_is_trash(ctx, field)
 			case "user_id":
@@ -4031,8 +4483,6 @@ func (ec *executionContext) fieldContext_Mutation_deleteTemplate(ctx context.Con
 				return ec.fieldContext_CompanyCustomTemplate_id(ctx, field)
 			case "name":
 				return ec.fieldContext_CompanyCustomTemplate_name(ctx, field)
-			case "template":
-				return ec.fieldContext_CompanyCustomTemplate_template(ctx, field)
 			case "is_trash":
 				return ec.fieldContext_CompanyCustomTemplate_is_trash(ctx, field)
 			case "user_id":
@@ -4053,6 +4503,210 @@ func (ec *executionContext) fieldContext_Mutation_deleteTemplate(ctx context.Con
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteTemplate_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createTemplateField(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createTemplateField(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateTemplateField(rctx, fc.Args["input"].(*model.CreateTemplateFieldInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.CompanyCustomTemplateField)
+	fc.Result = res
+	return ec.marshalOCompanyCustomTemplateField2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐCompanyCustomTemplateField(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createTemplateField(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_CompanyCustomTemplateField_id(ctx, field)
+			case "group_name":
+				return ec.fieldContext_CompanyCustomTemplateField_group_name(ctx, field)
+			case "label":
+				return ec.fieldContext_CompanyCustomTemplateField_label(ctx, field)
+			case "type":
+				return ec.fieldContext_CompanyCustomTemplateField_type(ctx, field)
+			case "template_id":
+				return ec.fieldContext_CompanyCustomTemplateField_template_id(ctx, field)
+			case "created_at":
+				return ec.fieldContext_CompanyCustomTemplateField_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_CompanyCustomTemplateField_updated_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CompanyCustomTemplateField", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createTemplateField_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateTemplateField(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateTemplateField(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateTemplateField(rctx, fc.Args["input"].(*model.UpdateTemplateFieldInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.CompanyCustomTemplateField)
+	fc.Result = res
+	return ec.marshalOCompanyCustomTemplateField2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐCompanyCustomTemplateField(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateTemplateField(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_CompanyCustomTemplateField_id(ctx, field)
+			case "group_name":
+				return ec.fieldContext_CompanyCustomTemplateField_group_name(ctx, field)
+			case "label":
+				return ec.fieldContext_CompanyCustomTemplateField_label(ctx, field)
+			case "type":
+				return ec.fieldContext_CompanyCustomTemplateField_type(ctx, field)
+			case "template_id":
+				return ec.fieldContext_CompanyCustomTemplateField_template_id(ctx, field)
+			case "created_at":
+				return ec.fieldContext_CompanyCustomTemplateField_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_CompanyCustomTemplateField_updated_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CompanyCustomTemplateField", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateTemplateField_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteTemplateField(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteTemplateField(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteTemplateField(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.CompanyCustomTemplateField)
+	fc.Result = res
+	return ec.marshalOCompanyCustomTemplateField2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐCompanyCustomTemplateField(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteTemplateField(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_CompanyCustomTemplateField_id(ctx, field)
+			case "group_name":
+				return ec.fieldContext_CompanyCustomTemplateField_group_name(ctx, field)
+			case "label":
+				return ec.fieldContext_CompanyCustomTemplateField_label(ctx, field)
+			case "type":
+				return ec.fieldContext_CompanyCustomTemplateField_type(ctx, field)
+			case "template_id":
+				return ec.fieldContext_CompanyCustomTemplateField_template_id(ctx, field)
+			case "created_at":
+				return ec.fieldContext_CompanyCustomTemplateField_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_CompanyCustomTemplateField_updated_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CompanyCustomTemplateField", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteTemplateField_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -5519,11 +6173,14 @@ func (ec *executionContext) _Note_created_at(ctx context.Context, field graphql.
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Note_created_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5533,7 +6190,7 @@ func (ec *executionContext) fieldContext_Note_created_at(ctx context.Context, fi
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -5560,11 +6217,14 @@ func (ec *executionContext) _Note_updated_at(ctx context.Context, field graphql.
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Note_updated_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5574,7 +6234,7 @@ func (ec *executionContext) fieldContext_Note_updated_at(ctx context.Context, fi
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -6020,11 +6680,14 @@ func (ec *executionContext) _Person_created_at(ctx context.Context, field graphq
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Person_created_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6034,7 +6697,7 @@ func (ec *executionContext) fieldContext_Person_created_at(ctx context.Context, 
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -6061,11 +6724,14 @@ func (ec *executionContext) _Person_updated_at(ctx context.Context, field graphq
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Person_updated_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6075,7 +6741,7 @@ func (ec *executionContext) fieldContext_Person_updated_at(ctx context.Context, 
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -6201,8 +6867,6 @@ func (ec *executionContext) fieldContext_Query_getTemplate(ctx context.Context, 
 				return ec.fieldContext_CompanyCustomTemplate_id(ctx, field)
 			case "name":
 				return ec.fieldContext_CompanyCustomTemplate_name(ctx, field)
-			case "template":
-				return ec.fieldContext_CompanyCustomTemplate_template(ctx, field)
 			case "is_trash":
 				return ec.fieldContext_CompanyCustomTemplate_is_trash(ctx, field)
 			case "user_id":
@@ -6955,11 +7619,14 @@ func (ec *executionContext) _User_created_at(ctx context.Context, field graphql.
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_created_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6969,7 +7636,7 @@ func (ec *executionContext) fieldContext_User_created_at(ctx context.Context, fi
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -6996,11 +7663,14 @@ func (ec *executionContext) _User_updated_at(ctx context.Context, field graphql.
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_updated_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7010,7 +7680,7 @@ func (ec *executionContext) fieldContext_User_updated_at(ctx context.Context, fi
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -7129,8 +7799,6 @@ func (ec *executionContext) fieldContext_User_templates(ctx context.Context, fie
 				return ec.fieldContext_CompanyCustomTemplate_id(ctx, field)
 			case "name":
 				return ec.fieldContext_CompanyCustomTemplate_name(ctx, field)
-			case "template":
-				return ec.fieldContext_CompanyCustomTemplate_template(ctx, field)
 			case "is_trash":
 				return ec.fieldContext_CompanyCustomTemplate_is_trash(ctx, field)
 			case "user_id":
@@ -9574,6 +10242,71 @@ func (ec *executionContext) unmarshalInputCreatePersonInput(ctx context.Context,
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateTemplateFieldInput(ctx context.Context, obj interface{}) (model.CreateTemplateFieldInput, error) {
+	var it model.CreateTemplateFieldInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"group_name", "label", "type", "template_id", "user_id"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "group_name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("group_name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.GroupName = data
+		case "label":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("label"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Label = data
+		case "type":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Type = data
+		case "template_id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("template_id"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TemplateID = data
+		case "user_id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user_id"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserID = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateTemplateInput(ctx context.Context, obj interface{}) (model.CreateTemplateInput, error) {
 	var it model.CreateTemplateInput
 	asMap := map[string]interface{}{}
@@ -9581,7 +10314,7 @@ func (ec *executionContext) unmarshalInputCreateTemplateInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "template", "user_id", "is_trash"}
+	fieldsInOrder := [...]string{"name", "user_id", "is_trash"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -9597,15 +10330,6 @@ func (ec *executionContext) unmarshalInputCreateTemplateInput(ctx context.Contex
 				return it, err
 			}
 			it.Name = data
-		case "template":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("template"))
-			data, err := ec.unmarshalNJSON2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Template = data
 		case "user_id":
 			var err error
 
@@ -10220,6 +10944,62 @@ func (ec *executionContext) unmarshalInputUpdatePersonInput(ctx context.Context,
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateTemplateFieldInput(ctx context.Context, obj interface{}) (model.UpdateTemplateFieldInput, error) {
+	var it model.UpdateTemplateFieldInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "label", "type", "template_id"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "label":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("label"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Label = data
+		case "type":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Type = data
+		case "template_id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("template_id"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TemplateID = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateTemplateInput(ctx context.Context, obj interface{}) (model.UpdateTemplateInput, error) {
 	var it model.UpdateTemplateInput
 	asMap := map[string]interface{}{}
@@ -10227,7 +11007,7 @@ func (ec *executionContext) unmarshalInputUpdateTemplateInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "name", "template", "user_id", "is_trash"}
+	fieldsInOrder := [...]string{"id", "name", "user_id", "is_trash"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -10252,15 +11032,6 @@ func (ec *executionContext) unmarshalInputUpdateTemplateInput(ctx context.Contex
 				return it, err
 			}
 			it.Name = data
-		case "template":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("template"))
-			data, err := ec.unmarshalOJSON2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Template = data
 		case "user_id":
 			var err error
 
@@ -10335,8 +11106,14 @@ func (ec *executionContext) _Calendar(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "created_at":
 			out.Values[i] = ec._Calendar_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "updated_at":
 			out.Values[i] = ec._Calendar_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10405,8 +11182,14 @@ func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "created_at":
 			out.Values[i] = ec._Company_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "updated_at":
 			out.Values[i] = ec._Company_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10470,8 +11253,14 @@ func (ec *executionContext) _CompanyCustomField(ctx context.Context, sel ast.Sel
 			}
 		case "created_at":
 			out.Values[i] = ec._CompanyCustomField_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "updated_at":
 			out.Values[i] = ec._CompanyCustomField_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10516,11 +11305,6 @@ func (ec *executionContext) _CompanyCustomTemplate(ctx context.Context, sel ast.
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "template":
-			out.Values[i] = ec._CompanyCustomTemplate_template(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "is_trash":
 			out.Values[i] = ec._CompanyCustomTemplate_is_trash(ctx, field, obj)
 		case "user_id":
@@ -10530,8 +11314,83 @@ func (ec *executionContext) _CompanyCustomTemplate(ctx context.Context, sel ast.
 			}
 		case "created_at":
 			out.Values[i] = ec._CompanyCustomTemplate_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "updated_at":
 			out.Values[i] = ec._CompanyCustomTemplate_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var companyCustomTemplateFieldImplementors = []string{"CompanyCustomTemplateField"}
+
+func (ec *executionContext) _CompanyCustomTemplateField(ctx context.Context, sel ast.SelectionSet, obj *model.CompanyCustomTemplateField) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, companyCustomTemplateFieldImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CompanyCustomTemplateField")
+		case "id":
+			out.Values[i] = ec._CompanyCustomTemplateField_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "group_name":
+			out.Values[i] = ec._CompanyCustomTemplateField_group_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "label":
+			out.Values[i] = ec._CompanyCustomTemplateField_label(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "type":
+			out.Values[i] = ec._CompanyCustomTemplateField_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "template_id":
+			out.Values[i] = ec._CompanyCustomTemplateField_template_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "created_at":
+			out.Values[i] = ec._CompanyCustomTemplateField_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updated_at":
+			out.Values[i] = ec._CompanyCustomTemplateField_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10593,6 +11452,18 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "deleteTemplate":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteTemplate(ctx, field)
+			})
+		case "createTemplateField":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createTemplateField(ctx, field)
+			})
+		case "updateTemplateField":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateTemplateField(ctx, field)
+			})
+		case "deleteTemplateField":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteTemplateField(ctx, field)
 			})
 		case "createCompany":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -10710,8 +11581,14 @@ func (ec *executionContext) _Note(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "created_at":
 			out.Values[i] = ec._Note_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "updated_at":
 			out.Values[i] = ec._Note_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10777,8 +11654,14 @@ func (ec *executionContext) _Person(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "created_at":
 			out.Values[i] = ec._Person_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "updated_at":
 			out.Values[i] = ec._Person_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -11009,8 +11892,14 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "created_at":
 			out.Values[i] = ec._User_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "updated_at":
 			out.Values[i] = ec._User_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "companies":
 			out.Values[i] = ec._User_companies(ctx, field, obj)
 		case "templates":
@@ -11400,12 +12289,12 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) unmarshalNJSON2string(ctx context.Context, v interface{}) (string, error) {
+func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNJSON2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalString(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -11415,13 +12304,13 @@ func (ec *executionContext) marshalNJSON2string(ctx context.Context, sel ast.Sel
 	return res
 }
 
-func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalString(v)
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	res := graphql.MarshalString(v)
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -11901,6 +12790,13 @@ func (ec *executionContext) marshalOCompanyCustomTemplate2ᚖgiftjobᚑbackend�
 	return ec._CompanyCustomTemplate(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalOCompanyCustomTemplateField2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐCompanyCustomTemplateField(ctx context.Context, sel ast.SelectionSet, v *model.CompanyCustomTemplateField) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CompanyCustomTemplateField(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalOCreateCalendarInput2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐCreateCalendarInput(ctx context.Context, v interface{}) (*model.CreateCalendarInput, error) {
 	if v == nil {
 		return nil, nil
@@ -11938,6 +12834,14 @@ func (ec *executionContext) unmarshalOCreatePersonInput2ᚖgiftjobᚑbackendᚋg
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputCreatePersonInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOCreateTemplateFieldInput2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐCreateTemplateFieldInput(ctx context.Context, v interface{}) (*model.CreateTemplateFieldInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputCreateTemplateFieldInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -11986,22 +12890,6 @@ func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.Se
 		return graphql.Null
 	}
 	res := graphql.MarshalID(*v)
-	return res
-}
-
-func (ec *executionContext) unmarshalOJSON2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := graphql.UnmarshalString(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOJSON2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	res := graphql.MarshalString(*v)
 	return res
 }
 
@@ -12162,6 +13050,14 @@ func (ec *executionContext) unmarshalOUpdatePersonInput2ᚖgiftjobᚑbackendᚋg
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputUpdatePersonInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOUpdateTemplateFieldInput2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐUpdateTemplateFieldInput(ctx context.Context, v interface{}) (*model.UpdateTemplateFieldInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputUpdateTemplateFieldInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 

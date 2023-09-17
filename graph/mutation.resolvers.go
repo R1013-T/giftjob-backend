@@ -6,8 +6,8 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"giftjob-backend/graph/model"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -15,17 +15,18 @@ import (
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input *model.CreateUserInput) (*model.User, error) {
 	user := model.User{
-		ID:       uuid.New().String(),
-		Provider: input.Provider,
-		UID:      input.UID,
-		Name:     input.Name,
-		Email:    input.Email,
-		Image:    input.Image,
+		ID:        uuid.New().String(),
+		Provider:  input.Provider,
+		UID:       input.UID,
+		Name:      input.Name,
+		Email:     input.Email,
+		Image:     input.Image,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
-	result := r.DB.Create(user)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := r.DB.Create(user).Error; err != nil {
+		return nil, err
 	}
 
 	return &user, nil
@@ -40,17 +41,122 @@ func (r *mutationResolver) SignIn(ctx context.Context, input *model.SignInInput)
 
 // CreateTemplate is the resolver for the createTemplate field.
 func (r *mutationResolver) CreateTemplate(ctx context.Context, input *model.CreateTemplateInput) (*model.CompanyCustomTemplate, error) {
-	panic(fmt.Errorf("not implemented: CreateTemplate - createTemplate"))
+	template := model.CompanyCustomTemplate{
+		ID:        uuid.New().String(),
+		Name:      input.Name,
+		UserID:    input.UserID,
+		IsTrash:   input.IsTrash,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	if err := r.DB.Create(template).Error; err != nil {
+		return nil, err
+	}
+
+	return &template, nil
 }
 
 // UpdateTemplate is the resolver for the updateTemplate field.
 func (r *mutationResolver) UpdateTemplate(ctx context.Context, input *model.UpdateTemplateInput) (*model.CompanyCustomTemplate, error) {
-	panic(fmt.Errorf("not implemented: UpdateTemplate - updateTemplate"))
+	template := &model.CompanyCustomTemplate{}
+	if err := r.DB.Where("id = ?", input.ID).First(&template).Error; err != nil {
+		return nil, err
+	}
+
+	if input.Name != nil {
+		template.Name = *input.Name
+	}
+	if input.UserID != nil {
+		template.UserID = *input.UserID
+	}
+	if input.IsTrash != nil {
+		template.IsTrash = input.IsTrash
+	}
+
+	template.UpdatedAt = time.Now()
+
+	if err := r.DB.Save(template).Error; err != nil {
+		return nil, err
+	}
+
+	return template, nil
 }
 
 // DeleteTemplate is the resolver for the deleteTemplate field.
 func (r *mutationResolver) DeleteTemplate(ctx context.Context, id string) (*model.CompanyCustomTemplate, error) {
-	panic(fmt.Errorf("not implemented: DeleteTemplate - deleteTemplate"))
+	template := &model.CompanyCustomTemplate{}
+
+	if err := r.DB.Where("id = ?", id).First(&template).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.DB.Where("template_id = ?", id).Delete(&model.CompanyCustomTemplateField{}).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.DB.Delete(&template).Error; err != nil {
+		return nil, err
+	}
+
+	return template, nil
+}
+
+// CreateTemplateField is the resolver for the createTemplateField field.
+func (r *mutationResolver) CreateTemplateField(ctx context.Context, input *model.CreateTemplateFieldInput) (*model.CompanyCustomTemplateField, error) {
+	templateField := model.CompanyCustomTemplateField{
+		ID:         uuid.New().String(),
+		GroupName:  input.GroupName,
+		Label:      input.Label,
+		Type:       input.Type,
+		TemplateID: input.TemplateID,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+	}
+
+	if err := r.DB.Create(templateField).Error; err != nil {
+		return nil, err
+	}
+
+	return &templateField, nil
+}
+
+// UpdateTemplateField is the resolver for the updateTemplateField field.
+func (r *mutationResolver) UpdateTemplateField(ctx context.Context, input *model.UpdateTemplateFieldInput) (*model.CompanyCustomTemplateField, error) {
+	templateField := &model.CompanyCustomTemplateField{}
+	if err := r.DB.Where("id = ?", input.ID).First(&templateField).Error; err != nil {
+		return nil, err
+	}
+
+	if input.Label != nil {
+		templateField.Label = *input.Label
+	}
+	if input.Type != nil {
+		templateField.Type = *input.Type
+	}
+
+	templateField.UpdatedAt = time.Now()
+
+	if err := r.DB.Save(templateField).Error; err != nil {
+		return nil, err
+	}
+
+	return templateField, nil
+}
+
+// DeleteTemplateField is the resolver for the deleteTemplateField field.
+func (r *mutationResolver) DeleteTemplateField(ctx context.Context, id string) (*model.CompanyCustomTemplateField, error) {
+	templateField := &model.CompanyCustomTemplateField{}
+
+	if err := r.DB.Where("id = ?", id).First(&templateField).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.DB.Delete(&templateField).Error; err != nil {
+		return nil, err
+	}
+
+	return templateField, nil
 }
 
 // CreateCompany is the resolver for the createCompany field.
@@ -67,11 +173,12 @@ func (r *mutationResolver) CreateCompany(ctx context.Context, input *model.Creat
 		IsPinned:        input.IsPinned,
 		IsTrash:         input.IsTrash,
 		UserID:          input.UserID,
+		CreatedAt:       time.Now(),
+		UpdatedAt:       time.Now(),
 	}
 
-	result := r.DB.Create(company)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := r.DB.Create(company).Error; err != nil {
+		return nil, err
 	}
 
 	return &company, nil
@@ -80,9 +187,8 @@ func (r *mutationResolver) CreateCompany(ctx context.Context, input *model.Creat
 // UpdateCompany is the resolver for the updateCompany field.
 func (r *mutationResolver) UpdateCompany(ctx context.Context, input *model.UpdateCompanyInput) (*model.Company, error) {
 	company := &model.Company{}
-	result := r.DB.First(&company, input.ID)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := r.DB.Where("id = ?", input.ID).First(&company).Error; err != nil {
+		return nil, err
 	}
 
 	if input.Name != nil {
@@ -113,6 +219,8 @@ func (r *mutationResolver) UpdateCompany(ctx context.Context, input *model.Updat
 		company.IsTrash = input.IsTrash
 	}
 
+	company.UpdatedAt = time.Now()
+
 	if err := r.DB.Save(company).Error; err != nil {
 		return nil, err
 	}
@@ -124,7 +232,11 @@ func (r *mutationResolver) UpdateCompany(ctx context.Context, input *model.Updat
 func (r *mutationResolver) DeleteCompany(ctx context.Context, id string) (*model.Company, error) {
 	company := &model.Company{}
 
-	if err := r.DB.First(&company, id).Error; err != nil {
+	if err := r.DB.Where("id = ?", id).First(&company).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.DB.Where("company_id = ?", id).Delete(&model.CompanyCustomField{}).Error; err != nil {
 		return nil, err
 	}
 
@@ -137,62 +249,284 @@ func (r *mutationResolver) DeleteCompany(ctx context.Context, id string) (*model
 
 // CreateCustomField is the resolver for the createCustomField field.
 func (r *mutationResolver) CreateCustomField(ctx context.Context, input *model.CreateCustomFieldInput) (*model.CompanyCustomField, error) {
-	panic(fmt.Errorf("not implemented: CreateCustomField - createCustomField"))
+	customField := model.CompanyCustomField{
+		ID:        uuid.New().String(),
+		GroupName: input.GroupName,
+		Label:     input.Label,
+		Value:     input.Value,
+		Type:      input.Type,
+		CompanyID: input.CompanyID,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	if err := r.DB.Create(customField).Error; err != nil {
+		return nil, err
+	}
+
+	return &customField, nil
 }
 
 // UpdateCustomField is the resolver for the updateCustomField field.
 func (r *mutationResolver) UpdateCustomField(ctx context.Context, input *model.UpdateCustomFieldInput) (*model.CompanyCustomField, error) {
-	panic(fmt.Errorf("not implemented: UpdateCustomField - updateCustomField"))
+	customFiled := &model.CompanyCustomField{}
+	if err := r.DB.Where("id = ?", input.ID).First(&customFiled).Error; err != nil {
+		return nil, err
+	}
+
+	if input.GroupName != nil {
+		customFiled.GroupName = *input.GroupName
+	}
+	if input.Label != nil {
+		customFiled.Label = *input.Label
+	}
+	if input.Value != nil {
+		customFiled.Value = input.Value
+	}
+	if input.Type != nil {
+		customFiled.Type = *input.Type
+	}
+
+	customFiled.UpdatedAt = time.Now()
+
+	if err := r.DB.Save(customFiled).Error; err != nil {
+		return nil, err
+	}
+
+	return customFiled, nil
 }
 
 // DeleteCustomField is the resolver for the deleteCustomField field.
 func (r *mutationResolver) DeleteCustomField(ctx context.Context, id string) (*model.CompanyCustomField, error) {
-	panic(fmt.Errorf("not implemented: DeleteCustomField - deleteCustomField"))
+	customFiled := &model.CompanyCustomField{}
+
+	if err := r.DB.Where("id = ?", id).First(&customFiled).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.DB.Delete(&customFiled).Error; err != nil {
+		return nil, err
+	}
+
+	return customFiled, nil
 }
 
 // CreatePerson is the resolver for the createPerson field.
 func (r *mutationResolver) CreatePerson(ctx context.Context, input *model.CreatePersonInput) (*model.Person, error) {
-	panic(fmt.Errorf("not implemented: CreatePerson - createPerson"))
+	person := model.Person{
+		ID:         uuid.New().String(),
+		Name:       input.Name,
+		Department: input.Department,
+		Position:   input.Position,
+		Tell:       input.Tell,
+		Email:      input.Email,
+		Memo:       input.Memo,
+		IsTrash:    input.IsTrash,
+		CompanyID:  input.CompanyID,
+		UserID:     input.UserID,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+	}
+
+	if err := r.DB.Create(person).Error; err != nil {
+		return nil, err
+	}
+
+	return &person, nil
 }
 
 // UpdatePerson is the resolver for the updatePerson field.
 func (r *mutationResolver) UpdatePerson(ctx context.Context, input *model.UpdatePersonInput) (*model.Person, error) {
-	panic(fmt.Errorf("not implemented: UpdatePerson - updatePerson"))
+	person := &model.Person{}
+	if err := r.DB.Where("id = ?", input.ID).First(&person).Error; err != nil {
+		return nil, err
+	}
+
+	if input.Name != nil {
+		person.Name = input.Name
+	}
+	if input.Department != nil {
+		person.Department = input.Department
+	}
+	if input.Position != nil {
+		person.Position = input.Position
+	}
+	if input.Tell != nil {
+		person.Tell = input.Tell
+	}
+	if input.Email != nil {
+		person.Email = input.Email
+	}
+	if input.Memo != nil {
+		person.Memo = input.Memo
+	}
+	if input.IsTrash != nil {
+		person.IsTrash = input.IsTrash
+	}
+
+	person.UpdatedAt = time.Now()
+
+	if err := r.DB.Save(person).Error; err != nil {
+		return nil, err
+	}
+
+	return person, nil
 }
 
 // DeletePerson is the resolver for the deletePerson field.
 func (r *mutationResolver) DeletePerson(ctx context.Context, id string) (*model.Person, error) {
-	panic(fmt.Errorf("not implemented: DeletePerson - deletePerson"))
+	person := &model.Person{}
+
+	if err := r.DB.Where("id = ?", id).First(&person).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.DB.Delete(&person).Error; err != nil {
+		return nil, err
+	}
+
+	return person, nil
 }
 
 // CreateNoteForPerson is the resolver for the createNoteForPerson field.
 func (r *mutationResolver) CreateNoteForPerson(ctx context.Context, input *model.CreateNoteInput) (*model.Note, error) {
-	panic(fmt.Errorf("not implemented: CreateNoteForPerson - createNoteForPerson"))
+	note := model.Note{
+		ID:        uuid.New().String(),
+		Title:     input.Title,
+		Content:   input.Content,
+		IsPinned:  input.IsPinned,
+		IsTrash:   input.IsTrash,
+		UserID:    input.UserID,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	if err := r.DB.Create(note).Error; err != nil {
+		return nil, err
+	}
+
+	return &note, nil
 }
 
 // UpdateNoteForPerson is the resolver for the updateNoteForPerson field.
 func (r *mutationResolver) UpdateNoteForPerson(ctx context.Context, input *model.UpdateNoteInput) (*model.Note, error) {
-	panic(fmt.Errorf("not implemented: UpdateNoteForPerson - updateNoteForPerson"))
+	note := &model.Note{}
+	if err := r.DB.Where("id = ?", input.ID).First(&note).Error; err != nil {
+		return nil, err
+	}
+
+	if input.Title != nil {
+		note.Title = input.Title
+	}
+	if input.Content != nil {
+		note.Content = input.Content
+	}
+	if input.IsPinned != nil {
+		note.IsPinned = input.IsPinned
+	}
+	if input.IsTrash != nil {
+		note.IsTrash = input.IsTrash
+	}
+
+	note.UpdatedAt = time.Now()
+
+	if err := r.DB.Save(note).Error; err != nil {
+		return nil, err
+	}
+
+	return note, nil
 }
 
 // DeleteNoteForPerson is the resolver for the deleteNoteForPerson field.
 func (r *mutationResolver) DeleteNoteForPerson(ctx context.Context, id string) (*model.Note, error) {
-	panic(fmt.Errorf("not implemented: DeleteNoteForPerson - deleteNoteForPerson"))
+	note := &model.Note{}
+
+	if err := r.DB.Where("id = ?", id).First(&note).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.DB.Delete(&note).Error; err != nil {
+		return nil, err
+	}
+
+	return note, nil
 }
 
 // CreateCalendar is the resolver for the createCalendar field.
 func (r *mutationResolver) CreateCalendar(ctx context.Context, input *model.CreateCalendarInput) (*model.Calendar, error) {
-	panic(fmt.Errorf("not implemented: CreateCalendar - createCalendar"))
+	calendar := model.Calendar{
+		ID:           uuid.New().String(),
+		Title:        input.Title,
+		Description:  input.Description,
+		StartTime:    input.StartTime,
+		EndTime:      input.EndTime,
+		Location:     input.Location,
+		IsAllDay:     input.IsAllDay,
+		IsFromGoogle: input.IsFromGoogle,
+		CompanyID:    input.CompanyID,
+		UserID:       input.UserID,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+
+	if err := r.DB.Create(calendar).Error; err != nil {
+		return nil, err
+	}
+
+	return &calendar, nil
 }
 
 // UpdateCalendar is the resolver for the updateCalendar field.
 func (r *mutationResolver) UpdateCalendar(ctx context.Context, input *model.UpdateCalendarInput) (*model.Calendar, error) {
-	panic(fmt.Errorf("not implemented: UpdateCalendar - updateCalendar"))
+	calendar := &model.Calendar{}
+	if err := r.DB.Where("id = ?", input.ID).First(&calendar).Error; err != nil {
+		return nil, err
+	}
+
+	if input.Title != nil {
+		calendar.Title = input.Title
+	}
+	if input.Description != nil {
+		calendar.Description = input.Description
+	}
+	if input.StartTime != nil {
+		calendar.StartTime = input.StartTime
+	}
+	if input.EndTime != nil {
+		calendar.EndTime = input.EndTime
+	}
+	if input.Location != nil {
+		calendar.Location = input.Location
+	}
+	if input.IsAllDay != nil {
+		calendar.IsAllDay = input.IsAllDay
+	}
+	if input.IsFromGoogle != nil {
+		calendar.IsFromGoogle = input.IsFromGoogle
+	}
+
+	calendar.UpdatedAt = time.Now()
+
+	if err := r.DB.Save(calendar).Error; err != nil {
+		return nil, err
+	}
+
+	return calendar, nil
 }
 
 // DeleteCalendar is the resolver for the deleteCalendar field.
 func (r *mutationResolver) DeleteCalendar(ctx context.Context, id string) (*model.Calendar, error) {
-	panic(fmt.Errorf("not implemented: DeleteCalendar - deleteCalendar"))
+	calendar := &model.Calendar{}
+
+	if err := r.DB.Where("id = ?", id).First(&calendar).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.DB.Delete(&calendar).Error; err != nil {
+		return nil, err
+	}
+
+	return calendar, nil
 }
 
 // Mutation returns MutationResolver implementation.

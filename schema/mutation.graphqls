@@ -7,6 +7,10 @@ type Mutation {
     createTemplate(input: CreateTemplateInput): CompanyCustomTemplate
     updateTemplate(input: UpdateTemplateInput): CompanyCustomTemplate
     deleteTemplate(id: ID!): CompanyCustomTemplate
+    # CompanyCustomTemplateField
+    createTemplateField(input: CreateTemplateFieldInput): CompanyCustomTemplateField
+    updateTemplateField(input: UpdateTemplateFieldInput): CompanyCustomTemplateField
+    deleteTemplateField(id: ID!): CompanyCustomTemplateField
     # Company
     createCompany(input: CreateCompanyInput): Company
     updateCompany(input: UpdateCompanyInput): Company

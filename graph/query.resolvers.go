@@ -27,7 +27,7 @@ func (r *queryResolver) GetUser(ctx context.Context, id string) (*model.User, er
 // GetTemplate is the resolver for the getTemplate field.
 func (r *queryResolver) GetTemplate(ctx context.Context, id string) (*model.CompanyCustomTemplate, error) {
 	var template model.CompanyCustomTemplate
-	if err := r.DB.Where("id = ?", id).First(&template).Error; err != nil {
+	if err := r.DB.Where("id = ?", id).Preload("CompanyCustomTemplateFields").First(&template).Error; err != nil {
 		return nil, err
 	}
 	return &template, nil
@@ -36,7 +36,7 @@ func (r *queryResolver) GetTemplate(ctx context.Context, id string) (*model.Comp
 // GetCompany is the resolver for the getCompany field.
 func (r *queryResolver) GetCompany(ctx context.Context, id string) (*model.Company, error) {
 	var company model.Company
-	if err := r.DB.Where("id = ?", id).First(&company).Error; err != nil {
+	if err := r.DB.Where("id = ?", id).Preload("CompanyCustomFields").First(&company).Error; err != nil {
 		return nil, err
 	}
 	return &company, nil

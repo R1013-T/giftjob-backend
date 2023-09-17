@@ -1,4 +1,5 @@
 scalar JSON
+scalar Time
 
 type User {
     id: ID!
@@ -7,8 +8,8 @@ type User {
     name: String!
     email: String!
     image: String!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
     companies: [Company]
     templates: [CompanyCustomTemplate]
     Notes: [Note]
@@ -19,11 +20,20 @@ type User {
 type CompanyCustomTemplate {
     id: ID!
     name: String!
-    template: JSON!
     is_trash: Boolean
     user_id: ID!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
+}
+
+type CompanyCustomTemplateField {
+    id: ID!
+    group_name: String!
+    label: String!
+    type: String!
+    template_id: ID!
+    created_at: Time!
+    updated_at: Time!
 }
 
 type Company {
@@ -40,8 +50,8 @@ type Company {
     is_trash: Boolean
     CompanyCustomFields: [CompanyCustomField]
     user_id: ID!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
 }
 
 type CompanyCustomField {
@@ -51,8 +61,8 @@ type CompanyCustomField {
     value: String
     type: String!
     company_id: ID!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
 }
 
 type Person {
@@ -66,8 +76,8 @@ type Person {
     is_trash: Boolean
     company_id: ID!
     user_id: ID!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
 }
 
 type Note {
@@ -78,8 +88,8 @@ type Note {
     pinned_at: String
     is_trash: Boolean
     user_id: ID!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
 }
 
 type Calendar {
@@ -93,6 +103,6 @@ type Calendar {
     is_from_google: Boolean
     company_id: ID!
     user_id: ID!
-    created_at: String
-    updated_at: String
+    created_at: Time!
+    updated_at: Time!
 }
