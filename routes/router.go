@@ -6,10 +6,21 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func Init() *echo.Echo {
 	e := echo.New()
+
+	e.Use(
+		middleware.Logger(),
+		middleware.Recover(),
+		middleware.CORSWithConfig(middleware.CORSConfig{
+			AllowOrigins:     []string{"http://localhost:3000"},
+			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+			AllowCredentials: true,
+		}),
+	)
 
 	e.POST("/query", graphqlHandler())
 	e.GET("/", playgroundHandler())
