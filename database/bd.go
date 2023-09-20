@@ -4,22 +4,14 @@ import (
 	"giftjob-backend/graph/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"os"
 )
 
 var DB *gorm.DB
 var err error
 
 func Init() {
-	//host := utils.Getenv("DB_HOST")
-	//user := utils.Getenv("DB_USER")
-	//password := utils.Getenv("DB_PASSWORD")
-	//dbname := utils.Getenv("DB_NAME")
-	//port := utils.Getenv("DB_PORT")
-
-	//url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", user, password, host, port, dbname)
-
-	//url := utils.Getenv("DB_URL")
-	url := "postgres://takahashi:TestPostgres01@rt-test-sqlserver.postgres.database.azure.com:5432/postgres"
+	url := os.Getenv("DB_URL")
 
 	DB, err = gorm.Open(postgres.Open(url), &gorm.Config{})
 	if err != nil {
