@@ -28,7 +28,7 @@ func DecryptAndVerifyJWEToken(token string, privateKey string) ([]byte, error) {
 }
 
 func JWEAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
-	log.Println("JWEAuthentication middleware started")
+	log.Println("JWEAuthentication middleware started (header)")
 
 	return func(c echo.Context) error {
 		authHeader := c.Request().Header.Get("Authorization")
