@@ -18,7 +18,7 @@ func Init() *echo.Echo {
 		middleware.Logger(),
 		middleware.Recover(),
 		middleware.CORSWithConfig(middleware.CORSConfig{
-			AllowOrigins:     []string{utils.Getenv("FRONTEND_URL"), "http://localhost:3000"},
+			AllowOrigins:     []string{utils.Getenv("FRONTEND_URL"), "http://localhost:3000", "https://test-nextauth-apollo.vercel.app"},
 			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 			AllowCredentials: true,
 		}),
