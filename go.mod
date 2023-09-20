@@ -4,9 +4,9 @@ go 1.20
 
 require (
 	github.com/99designs/gqlgen v0.17.37
-	github.com/go-jose/go-jose/v3 v3.0.0
 	github.com/google/uuid v1.3.1
 	github.com/joho/godotenv v1.5.1
+	github.com/labstack/echo-jwt/v4 v4.2.0
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/vektah/gqlparser/v2 v2.5.9
 	gorm.io/driver/postgres v1.5.2
@@ -15,7 +15,9 @@ require (
 
 require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.3 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

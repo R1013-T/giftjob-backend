@@ -1,56 +1,46 @@
 package middleware
 
 import (
-	"giftjob-backend/utils"
-	"github.com/go-jose/go-jose/v3"
+	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
-	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
-func DecryptAndVerifyJWEToken(token string, privateKey string) ([]byte, error) {
-	object, err := jose.ParseEncrypted(token)
-	if err != nil {
-		log.Println("Error parsing JWE token:", err)
-		return nil, err
-	}
+var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
-	decrypted, err := object.Decrypt(privateKey)
-	if err != nil {
-		log.Println("Error decrypting JWE token:", err)
-		return nil, err
-	}
-
-	log.Printf("Decrypted token: %s", decrypted)
-
-	return decrypted, nil
-}
-
-func JWEAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
-	log.Println("JWEAuthentication middleware started (header)")
+func JWTAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-		authHeader := c.Request().Header.Get("Authorization")
-		if authHeader == "" {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing Authorization header")
+		authorizationHeader := c.Request().Header.Get("Authorization")
+		if authorizationHeader == "" {
+			return echo.NewHTTPError(http.StatusUnauthorized, "authorization header missing")
 		}
 
-		// "Bearer"の後にトークンがあるはずなので、それを取得
-		splitted := strings.Split(authHeader, " ")
-		if len(splitted) != 2 {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid Authorization header format")
+		parts := strings.Split(authorizationHeader, " ")
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			return echo.NewHTTPError(http.StatusUnauthorized, "authorization header format is Bearer <token>")
 		}
 
-		token := splitted[1]
+		tokenString := parts[1]
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
+			return jwtSecret, nil
+		})
 
-		_, err := DecryptAndVerifyJWEToken(token, utils.Getenv("JWE_SECRET"))
 		if err != nil {
-			log.Println("Error decrypting and verifying JWE token:", err)
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+			return echo.NewHTTPError(http.StatusUnauthorized, "error parsing token")
 		}
 
-		log.Printf("JWE token verified: %s", token)
-		return next(c)
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			c.Set("user", claims)
+			return next(c)
+		} else {
+			return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
+		}
 	}
 }

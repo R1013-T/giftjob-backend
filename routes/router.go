@@ -8,6 +8,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"os"
 )
 
 func Init() *echo.Echo {
@@ -16,14 +17,18 @@ func Init() *echo.Echo {
 	e.Use(
 		middleware.Logger(),
 		middleware.Recover(),
+	)
+
+	e.Use(
 		middleware.CORSWithConfig(middleware.CORSConfig{
-			//AllowOrigins:     []string{utils.Getenv("FRONTEND_URL"), "http://localhost:3000", "https://test-nextauth-apollo.vercel.app"},
-			AllowOrigins:     []string{"*"},
+			AllowOrigins:     []string{os.Getenv("FRONTEND_URL"), "http://localhost:3000"},
 			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+			AllowHeaders:     []string{"Authorization", "Content-Type"},
 			AllowCredentials: true,
 		}),
-		customMiddleware.JWEAuthentication,
 	)
+
+	e.Use(customMiddleware.JWTAuthentication)
 
 	e.POST("/query", graphqlHandler())
 	e.GET("/", playgroundHandler())
