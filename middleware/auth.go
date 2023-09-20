@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func DecryptAndVerifyJWEToken(token string, privateKey string) ([]byte, error) {
@@ -30,19 +31,26 @@ func JWEAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 	log.Println("JWEAuthentication middleware started")
 
 	return func(c echo.Context) error {
-		jweTokenCookie, err := c.Cookie("__Secure-next-auth.session-token")
-		if err != nil {
-			log.Println("Error getting cookie:", err)
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		authHeader := c.Request().Header.Get("Authorization")
+		if authHeader == "" {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing Authorization header")
 		}
 
-		_, err = DecryptAndVerifyJWEToken(jweTokenCookie.Value, utils.Getenv("JWE_SECRET"))
+		// "Bearer"の後にトークンがあるはずなので、それを取得
+		splitted := strings.Split(authHeader, " ")
+		if len(splitted) != 2 {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid Authorization header format")
+		}
+
+		token := splitted[1]
+
+		_, err := DecryptAndVerifyJWEToken(token, utils.Getenv("JWE_SECRET"))
 		if err != nil {
 			log.Println("Error decrypting and verifying JWE token:", err)
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
-		log.Printf("JWE token verified: %s", jweTokenCookie.Value)
+		log.Printf("JWE token verified: %s", token)
 		return next(c)
 	}
 }
