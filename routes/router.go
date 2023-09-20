@@ -3,6 +3,8 @@ package routes
 import (
 	"giftjob-backend/database"
 	"giftjob-backend/graph"
+	customMiddleware "giftjob-backend/middleware"
+	"giftjob-backend/utils"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/labstack/echo/v4"
@@ -16,10 +18,11 @@ func Init() *echo.Echo {
 		middleware.Logger(),
 		middleware.Recover(),
 		middleware.CORSWithConfig(middleware.CORSConfig{
-			AllowOrigins:     []string{"http://localhost:3000"},
+			AllowOrigins:     []string{utils.Getenv("FRONTEND_URL"), "http://localhost:3000"},
 			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 			AllowCredentials: true,
 		}),
+		customMiddleware.JWEAuthentication,
 	)
 
 	e.POST("/query", graphqlHandler())
