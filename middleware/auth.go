@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -38,6 +39,7 @@ func JWTAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			c.Set("user", claims)
+			log.Println("claims:", claims)
 			return next(c)
 		} else {
 			return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
