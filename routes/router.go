@@ -27,7 +27,6 @@ func Init() *echo.Echo {
 			AllowCredentials: true,
 		}),
 	)
-
 	e.Use(customMiddleware.JWTAuthentication)
 
 	e.POST("/query", graphqlHandler())

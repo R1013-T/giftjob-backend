@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 	"giftjob-backend/graph/model"
+	"gorm.io/gorm"
 	"time"
 
 	"github.com/google/uuid"
@@ -34,9 +35,34 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input *model.CreateUs
 
 // SignIn is the resolver for the signIn field.
 func (r *mutationResolver) SignIn(ctx context.Context, input *model.SignInInput) (*model.User, error) {
-	return &model.User{
-		Name: "Sign In",
-	}, nil
+	var user model.User
+
+	err := r.DB.Where("provider = ? AND uid = ?", input.Provider, input.UID).First(&user).Error
+
+	if err == nil {
+		return &user, nil
+	}
+
+	if err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	user = model.User{
+		ID:        uuid.New().String(),
+		Provider:  input.Provider,
+		UID:       input.UID,
+		Name:      input.Name,
+		Email:     input.Email,
+		Image:     input.Image,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	if err := r.DB.Create(user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 // CreateTemplate is the resolver for the createTemplate field.
