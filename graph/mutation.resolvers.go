@@ -7,10 +7,10 @@ package graph
 import (
 	"context"
 	"giftjob-backend/graph/model"
-	"gorm.io/gorm"
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // CreateUser is the resolver for the createUser field.
