@@ -39,6 +39,7 @@ type CompanyCustomTemplateField {
 type Company {
     id: ID!
     name: String
+    color: String
     tell: String
     email: String
     address: String
@@ -74,7 +75,7 @@ type Person {
     email: String
     memo: String
     is_trash: Boolean
-    company_id: ID!
+    company_id: ID
     user_id: ID!
     created_at: Time!
     updated_at: Time!
@@ -84,9 +85,11 @@ type Note {
     id: ID!
     title: String
     content: String
+    color: String
     is_pinned: Boolean
     pinned_at: String
     is_trash: Boolean
+    company_id: ID
     user_id: ID!
     created_at: Time!
     updated_at: Time!
@@ -96,12 +99,13 @@ type Calendar {
     id: ID!
     title: String
     description: String
+    color: String
     start_time: String
     end_time: String
     location: String
     is_all_day: Boolean
     is_from_google: Boolean
-    company_id: ID!
+    company_id: ID
     user_id: ID!
     created_at: Time!
     updated_at: Time!

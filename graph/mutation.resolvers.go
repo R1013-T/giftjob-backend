@@ -190,6 +190,7 @@ func (r *mutationResolver) CreateCompany(ctx context.Context, input *model.Creat
 	company := model.Company{
 		ID:              uuid.New().String(),
 		Name:            input.Name,
+		Color:           input.Color,
 		Tell:            input.Tell,
 		Email:           input.Email,
 		Address:         input.Address,
@@ -219,6 +220,9 @@ func (r *mutationResolver) UpdateCompany(ctx context.Context, input *model.Updat
 
 	if input.Name != nil {
 		company.Name = input.Name
+	}
+	if input.Color != nil {
+		company.Color = input.Color
 	}
 	if input.Tell != nil {
 		company.Tell = input.Tell
@@ -414,14 +418,16 @@ func (r *mutationResolver) DeletePerson(ctx context.Context, id string) (*model.
 	return person, nil
 }
 
-// CreateNoteForPerson is the resolver for the createNoteForPerson field.
-func (r *mutationResolver) CreateNoteForPerson(ctx context.Context, input *model.CreateNoteInput) (*model.Note, error) {
+// CreateNote is the resolver for the createNote field.
+func (r *mutationResolver) CreateNote(ctx context.Context, input *model.CreateNoteInput) (*model.Note, error) {
 	note := model.Note{
 		ID:        uuid.New().String(),
 		Title:     input.Title,
 		Content:   input.Content,
+		Color:     input.Color,
 		IsPinned:  input.IsPinned,
 		IsTrash:   input.IsTrash,
+		CompanyID: input.CompanyID,
 		UserID:    input.UserID,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -434,8 +440,8 @@ func (r *mutationResolver) CreateNoteForPerson(ctx context.Context, input *model
 	return &note, nil
 }
 
-// UpdateNoteForPerson is the resolver for the updateNoteForPerson field.
-func (r *mutationResolver) UpdateNoteForPerson(ctx context.Context, input *model.UpdateNoteInput) (*model.Note, error) {
+// UpdateNote is the resolver for the updateNote field.
+func (r *mutationResolver) UpdateNote(ctx context.Context, input *model.UpdateNoteInput) (*model.Note, error) {
 	note := &model.Note{}
 	if err := r.DB.Where("id = ?", input.ID).First(&note).Error; err != nil {
 		return nil, err
@@ -447,11 +453,17 @@ func (r *mutationResolver) UpdateNoteForPerson(ctx context.Context, input *model
 	if input.Content != nil {
 		note.Content = input.Content
 	}
+	if input.Color != nil {
+		note.Color = input.Color
+	}
 	if input.IsPinned != nil {
 		note.IsPinned = input.IsPinned
 	}
 	if input.IsTrash != nil {
 		note.IsTrash = input.IsTrash
+	}
+	if input.CompanyID != nil {
+		note.CompanyID = input.CompanyID
 	}
 
 	note.UpdatedAt = time.Now()
@@ -463,8 +475,8 @@ func (r *mutationResolver) UpdateNoteForPerson(ctx context.Context, input *model
 	return note, nil
 }
 
-// DeleteNoteForPerson is the resolver for the deleteNoteForPerson field.
-func (r *mutationResolver) DeleteNoteForPerson(ctx context.Context, id string) (*model.Note, error) {
+// DeleteNote is the resolver for the deleteNote field.
+func (r *mutationResolver) DeleteNote(ctx context.Context, id string) (*model.Note, error) {
 	note := &model.Note{}
 
 	if err := r.DB.Where("id = ?", id).First(&note).Error; err != nil {
@@ -484,6 +496,7 @@ func (r *mutationResolver) CreateCalendar(ctx context.Context, input *model.Crea
 		ID:           uuid.New().String(),
 		Title:        input.Title,
 		Description:  input.Description,
+		Color:        input.Color,
 		StartTime:    input.StartTime,
 		EndTime:      input.EndTime,
 		Location:     input.Location,
@@ -514,6 +527,9 @@ func (r *mutationResolver) UpdateCalendar(ctx context.Context, input *model.Upda
 	}
 	if input.Description != nil {
 		calendar.Description = input.Description
+	}
+	if input.Color != nil {
+		calendar.Color = input.Color
 	}
 	if input.StartTime != nil {
 		calendar.StartTime = input.StartTime

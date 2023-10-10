@@ -10,12 +10,13 @@ type Calendar struct {
 	ID           string    `json:"id"`
 	Title        *string   `json:"title,omitempty"`
 	Description  *string   `json:"description,omitempty"`
+	Color        *string   `json:"color,omitempty"`
 	StartTime    *string   `json:"start_time,omitempty"`
 	EndTime      *string   `json:"end_time,omitempty"`
 	Location     *string   `json:"location,omitempty"`
 	IsAllDay     *bool     `json:"is_all_day,omitempty"`
 	IsFromGoogle *bool     `json:"is_from_google,omitempty"`
-	CompanyID    string    `json:"company_id"`
+	CompanyID    *string   `json:"company_id,omitempty"`
 	UserID       string    `json:"user_id"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
@@ -24,6 +25,7 @@ type Calendar struct {
 type Company struct {
 	ID                  string                `json:"id"`
 	Name                *string               `json:"name,omitempty"`
+	Color               *string               `json:"color,omitempty"`
 	Tell                *string               `json:"tell,omitempty"`
 	Email               *string               `json:"email,omitempty"`
 	Address             *string               `json:"address,omitempty"`
@@ -72,17 +74,19 @@ type CompanyCustomTemplateField struct {
 type CreateCalendarInput struct {
 	Title        *string `json:"title,omitempty"`
 	Description  *string `json:"description,omitempty"`
+	Color        *string `json:"color,omitempty"`
 	StartTime    *string `json:"start_time,omitempty"`
 	EndTime      *string `json:"end_time,omitempty"`
 	Location     *string `json:"location,omitempty"`
 	IsAllDay     *bool   `json:"is_all_day,omitempty"`
 	IsFromGoogle *bool   `json:"is_from_google,omitempty"`
-	CompanyID    string  `json:"company_id"`
+	CompanyID    *string `json:"company_id,omitempty"`
 	UserID       string  `json:"user_id"`
 }
 
 type CreateCompanyInput struct {
 	Name            *string  `json:"name,omitempty"`
+	Color           *string  `json:"color,omitempty"`
 	Tell            *string  `json:"tell,omitempty"`
 	Email           *string  `json:"email,omitempty"`
 	Address         *string  `json:"address,omitempty"`
@@ -104,12 +108,14 @@ type CreateCustomFieldInput struct {
 }
 
 type CreateNoteInput struct {
-	Title    *string `json:"title,omitempty"`
-	Content  *string `json:"content,omitempty"`
-	IsPinned *bool   `json:"is_pinned,omitempty"`
-	PinnedAt *string `json:"pinned_at,omitempty"`
-	IsTrash  *bool   `json:"is_trash,omitempty"`
-	UserID   string  `json:"user_id"`
+	Title     *string `json:"title,omitempty"`
+	Content   *string `json:"content,omitempty"`
+	Color     *string `json:"color,omitempty"`
+	IsPinned  *bool   `json:"is_pinned,omitempty"`
+	PinnedAt  *string `json:"pinned_at,omitempty"`
+	IsTrash   *bool   `json:"is_trash,omitempty"`
+	CompanyID *string `json:"company_id,omitempty"`
+	UserID    string  `json:"user_id"`
 }
 
 type CreatePersonInput struct {
@@ -120,7 +126,7 @@ type CreatePersonInput struct {
 	Email      *string  `json:"email,omitempty"`
 	Memo       *string  `json:"memo,omitempty"`
 	IsTrash    *bool    `json:"is_trash,omitempty"`
-	CompanyID  string   `json:"company_id"`
+	CompanyID  *string  `json:"company_id,omitempty"`
 	UserID     string   `json:"user_id"`
 }
 
@@ -150,9 +156,11 @@ type Note struct {
 	ID        string    `json:"id"`
 	Title     *string   `json:"title,omitempty"`
 	Content   *string   `json:"content,omitempty"`
+	Color     *string   `json:"color,omitempty"`
 	IsPinned  *bool     `json:"is_pinned,omitempty"`
 	PinnedAt  *string   `json:"pinned_at,omitempty"`
 	IsTrash   *bool     `json:"is_trash,omitempty"`
+	CompanyID *string   `json:"company_id,omitempty"`
 	UserID    string    `json:"user_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -167,7 +175,7 @@ type Person struct {
 	Email      *string   `json:"email,omitempty"`
 	Memo       *string   `json:"memo,omitempty"`
 	IsTrash    *bool     `json:"is_trash,omitempty"`
-	CompanyID  string    `json:"company_id"`
+	CompanyID  *string   `json:"company_id,omitempty"`
 	UserID     string    `json:"user_id"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
@@ -185,6 +193,7 @@ type UpdateCalendarInput struct {
 	ID           string  `json:"id"`
 	Title        *string `json:"title,omitempty"`
 	Description  *string `json:"description,omitempty"`
+	Color        *string `json:"color,omitempty"`
 	StartTime    *string `json:"start_time,omitempty"`
 	EndTime      *string `json:"end_time,omitempty"`
 	Location     *string `json:"location,omitempty"`
@@ -196,6 +205,7 @@ type UpdateCalendarInput struct {
 type UpdateCompanyInput struct {
 	ID              string   `json:"id"`
 	Name            *string  `json:"name,omitempty"`
+	Color           *string  `json:"color,omitempty"`
 	Tell            *string  `json:"tell,omitempty"`
 	Email           *string  `json:"email,omitempty"`
 	Address         *string  `json:"address,omitempty"`
@@ -216,12 +226,14 @@ type UpdateCustomFieldInput struct {
 }
 
 type UpdateNoteInput struct {
-	ID       string  `json:"id"`
-	Title    *string `json:"title,omitempty"`
-	Content  *string `json:"content,omitempty"`
-	IsPinned *bool   `json:"is_pinned,omitempty"`
-	PinnedAt *string `json:"pinned_at,omitempty"`
-	IsTrash  *bool   `json:"is_trash,omitempty"`
+	ID        string  `json:"id"`
+	Title     *string `json:"title,omitempty"`
+	Content   *string `json:"content,omitempty"`
+	Color     *string `json:"color,omitempty"`
+	IsPinned  *bool   `json:"is_pinned,omitempty"`
+	PinnedAt  *string `json:"pinned_at,omitempty"`
+	CompanyID *string `json:"company_id,omitempty"`
+	IsTrash   *bool   `json:"is_trash,omitempty"`
 }
 
 type UpdatePersonInput struct {

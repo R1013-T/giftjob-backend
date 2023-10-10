@@ -1,155 +1,163 @@
 # User
 input CreateUserInput {
-  provider: String!
-  uid: String!
-  name: String!
-  email: String!
-  image: String!
+    provider: String!
+    uid: String!
+    name: String!
+    email: String!
+    image: String!
 }
 
 # Auth
 input SignInInput {
-  provider: String!
-  uid: String!
-  name: String!
-  email: String!
-  image: String!
+    provider: String!
+    uid: String!
+    name: String!
+    email: String!
+    image: String!
 }
 
 # CompanyCustomTemplate
 input CreateTemplateInput {
-  name: String!
-  user_id: ID!
-  is_trash: Boolean
+    name: String!
+    user_id: ID!
+    is_trash: Boolean
 }
 input UpdateTemplateInput {
-  id: ID!
-  name: String
-  user_id: ID
-  is_trash: Boolean
+    id: ID!
+    name: String
+    user_id: ID
+    is_trash: Boolean
 }
 
 #CompanyCustomTemplateField
 input CreateTemplateFieldInput {
-  group_name: String!
-  label: String!
-  type: String!
-  template_id: ID!
-  user_id: ID!
+    group_name: String!
+    label: String!
+    type: String!
+    template_id: ID!
+    user_id: ID!
 }
 input UpdateTemplateFieldInput {
-  id: ID!
-  label: String
-  type: String
-  template_id: ID
+    id: ID!
+    label: String
+    type: String
+    template_id: ID
 }
 
 # Company
 input CreateCompanyInput {
-  name: String
-  tell: String
-  email: String
-  address: String
-  site_url: String
-  industry: String
-  employees_number: Float
-  is_pinned: Boolean
-  pinned_at: String
-  is_trash: Boolean
-  user_id: ID!
+    name: String
+    color: String
+    tell: String
+    email: String
+    address: String
+    site_url: String
+    industry: String
+    employees_number: Float
+    is_pinned: Boolean
+    pinned_at: String
+    is_trash: Boolean
+    user_id: ID!
 }
 input UpdateCompanyInput {
-  id: ID!
-  name: String
-  tell: String
-  email: String
-  address: String
-  site_url: String
-  industry: String
-  employees_number: Float
-  is_pinned: Boolean
-  pinned_at: String
-  is_trash: Boolean
+    id: ID!
+    name: String
+    color: String
+    tell: String
+    email: String
+    address: String
+    site_url: String
+    industry: String
+    employees_number: Float
+    is_pinned: Boolean
+    pinned_at: String
+    is_trash: Boolean
 }
 
 # CompanyCustomField
 input CreateCustomFieldInput {
-  group_name: String!
-  label: String!
-  value: String
-  type: String!
-  company_id: ID!
+    group_name: String!
+    label: String!
+    value: String
+    type: String!
+    company_id: ID!
 }
 input UpdateCustomFieldInput {
-  id: ID!
-  group_name: String
-  label: String
-  value: String
-  type: String
+    id: ID!
+    group_name: String
+    label: String
+    value: String
+    type: String
 }
 
 # Person
 input CreatePersonInput {
-  name: String
-  department: String
-  position: String
-  tell: Float
-  email: String
-  memo: String
-  is_trash: Boolean
-  company_id: ID!
-  user_id: ID!
+    name: String
+    department: String
+    position: String
+    tell: Float
+    email: String
+    memo: String
+    is_trash: Boolean
+    company_id: ID
+    user_id: ID!
 }
 input UpdatePersonInput {
-  id: ID!
-  name: String
-  department: String
-  position: String
-  tell: Float
-  email: String
-  memo: String
-  company_id: ID
-  is_trash: Boolean
+    id: ID!
+    name: String
+    department: String
+    position: String
+    tell: Float
+    email: String
+    memo: String
+    company_id: ID
+    is_trash: Boolean
 }
 
 # Note
 input CreateNoteInput {
-  title: String
-  content: String
-  is_pinned: Boolean
-  pinned_at: String
-  is_trash: Boolean
-  user_id: ID!
+    title: String
+    content: String
+    color: String
+    is_pinned: Boolean
+    pinned_at: String
+    is_trash: Boolean
+    company_id: ID
+    user_id: ID!
 }
 input UpdateNoteInput {
-  id: ID!
-  title: String
-  content: String
-  is_pinned: Boolean
-  pinned_at: String
-  is_trash: Boolean
+    id: ID!
+    title: String
+    content: String
+    color: String
+    is_pinned: Boolean
+    pinned_at: String
+    company_id: ID
+    is_trash: Boolean
 }
 
 # Calendar
 input CreateCalendarInput {
-  title: String
-  description: String
-  start_time: String
-  end_time: String
-  location: String
-  is_all_day: Boolean
-  is_from_google: Boolean
-  company_id: ID!
-  user_id: ID!
+    title: String
+    description: String
+    color: String
+    start_time: String
+    end_time: String
+    location: String
+    is_all_day: Boolean
+    is_from_google: Boolean
+    company_id: ID
+    user_id: ID!
 }
 input UpdateCalendarInput {
-  id: ID!
-  title: String
-  description: String
-  start_time: String
-  end_time: String
-  location: String
-  is_all_day: Boolean
-  is_from_google: Boolean
-  company_id: ID
+    id: ID!
+    title: String
+    description: String
+    color: String
+    start_time: String
+    end_time: String
+    location: String
+    is_all_day: Boolean
+    is_from_google: Boolean
+    company_id: ID
 }

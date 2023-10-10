@@ -3,7 +3,6 @@ package routes
 import (
 	"giftjob-backend/database"
 	"giftjob-backend/graph"
-	customMiddleware "giftjob-backend/middleware"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/labstack/echo/v4"
@@ -27,7 +26,7 @@ func Init() *echo.Echo {
 			AllowCredentials: true,
 		}),
 	)
-	e.Use(customMiddleware.JWTAuthentication)
+	//e.Use(customMiddleware.JWTAuthentication)
 
 	e.POST("/query", graphqlHandler())
 	e.GET("/", playgroundHandler())

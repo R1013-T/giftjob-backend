@@ -24,9 +24,9 @@ type Mutation {
     updatePerson(input: UpdatePersonInput): Person
     deletePerson(id: ID!): Person
     # Note
-    createNoteForPerson(input: CreateNoteInput): Note
-    updateNoteForPerson(input: UpdateNoteInput): Note
-    deleteNoteForPerson(id: ID!): Note
+    createNote(input: CreateNoteInput): Note
+    updateNote(input: UpdateNoteInput): Note
+    deleteNote(id: ID!): Note
     # Calendar
     createCalendar(input: CreateCalendarInput): Calendar
     updateCalendar(input: UpdateCalendarInput): Calendar

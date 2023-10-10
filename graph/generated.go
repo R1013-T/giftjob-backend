@@ -46,6 +46,7 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Calendar struct {
+		Color        func(childComplexity int) int
 		CompanyID    func(childComplexity int) int
 		CreatedAt    func(childComplexity int) int
 		Description  func(childComplexity int) int
@@ -62,6 +63,7 @@ type ComplexityRoot struct {
 
 	Company struct {
 		Address             func(childComplexity int) int
+		Color               func(childComplexity int) int
 		CompanyCustomFields func(childComplexity int) int
 		CreatedAt           func(childComplexity int) int
 		Email               func(childComplexity int) int
@@ -112,7 +114,7 @@ type ComplexityRoot struct {
 		CreateCalendar      func(childComplexity int, input *model.CreateCalendarInput) int
 		CreateCompany       func(childComplexity int, input *model.CreateCompanyInput) int
 		CreateCustomField   func(childComplexity int, input *model.CreateCustomFieldInput) int
-		CreateNoteForPerson func(childComplexity int, input *model.CreateNoteInput) int
+		CreateNote          func(childComplexity int, input *model.CreateNoteInput) int
 		CreatePerson        func(childComplexity int, input *model.CreatePersonInput) int
 		CreateTemplate      func(childComplexity int, input *model.CreateTemplateInput) int
 		CreateTemplateField func(childComplexity int, input *model.CreateTemplateFieldInput) int
@@ -120,7 +122,7 @@ type ComplexityRoot struct {
 		DeleteCalendar      func(childComplexity int, id string) int
 		DeleteCompany       func(childComplexity int, id string) int
 		DeleteCustomField   func(childComplexity int, id string) int
-		DeleteNoteForPerson func(childComplexity int, id string) int
+		DeleteNote          func(childComplexity int, id string) int
 		DeletePerson        func(childComplexity int, id string) int
 		DeleteTemplate      func(childComplexity int, id string) int
 		DeleteTemplateField func(childComplexity int, id string) int
@@ -128,13 +130,15 @@ type ComplexityRoot struct {
 		UpdateCalendar      func(childComplexity int, input *model.UpdateCalendarInput) int
 		UpdateCompany       func(childComplexity int, input *model.UpdateCompanyInput) int
 		UpdateCustomField   func(childComplexity int, input *model.UpdateCustomFieldInput) int
-		UpdateNoteForPerson func(childComplexity int, input *model.UpdateNoteInput) int
+		UpdateNote          func(childComplexity int, input *model.UpdateNoteInput) int
 		UpdatePerson        func(childComplexity int, input *model.UpdatePersonInput) int
 		UpdateTemplate      func(childComplexity int, input *model.UpdateTemplateInput) int
 		UpdateTemplateField func(childComplexity int, input *model.UpdateTemplateFieldInput) int
 	}
 
 	Note struct {
+		Color     func(childComplexity int) int
+		CompanyID func(childComplexity int) int
 		Content   func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
@@ -205,9 +209,9 @@ type MutationResolver interface {
 	CreatePerson(ctx context.Context, input *model.CreatePersonInput) (*model.Person, error)
 	UpdatePerson(ctx context.Context, input *model.UpdatePersonInput) (*model.Person, error)
 	DeletePerson(ctx context.Context, id string) (*model.Person, error)
-	CreateNoteForPerson(ctx context.Context, input *model.CreateNoteInput) (*model.Note, error)
-	UpdateNoteForPerson(ctx context.Context, input *model.UpdateNoteInput) (*model.Note, error)
-	DeleteNoteForPerson(ctx context.Context, id string) (*model.Note, error)
+	CreateNote(ctx context.Context, input *model.CreateNoteInput) (*model.Note, error)
+	UpdateNote(ctx context.Context, input *model.UpdateNoteInput) (*model.Note, error)
+	DeleteNote(ctx context.Context, id string) (*model.Note, error)
 	CreateCalendar(ctx context.Context, input *model.CreateCalendarInput) (*model.Calendar, error)
 	UpdateCalendar(ctx context.Context, input *model.UpdateCalendarInput) (*model.Calendar, error)
 	DeleteCalendar(ctx context.Context, id string) (*model.Calendar, error)
@@ -235,6 +239,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Calendar.color":
+		if e.complexity.Calendar.Color == nil {
+			break
+		}
+
+		return e.complexity.Calendar.Color(childComplexity), true
 
 	case "Calendar.company_id":
 		if e.complexity.Calendar.CompanyID == nil {
@@ -326,6 +337,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Company.Address(childComplexity), true
+
+	case "Company.color":
+		if e.complexity.Company.Color == nil {
+			break
+		}
+
+		return e.complexity.Company.Color(childComplexity), true
 
 	case "Company.CompanyCustomFields":
 		if e.complexity.Company.CompanyCustomFields == nil {
@@ -608,17 +626,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateCustomField(childComplexity, args["input"].(*model.CreateCustomFieldInput)), true
 
-	case "Mutation.createNoteForPerson":
-		if e.complexity.Mutation.CreateNoteForPerson == nil {
+	case "Mutation.createNote":
+		if e.complexity.Mutation.CreateNote == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createNoteForPerson_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createNote_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateNoteForPerson(childComplexity, args["input"].(*model.CreateNoteInput)), true
+		return e.complexity.Mutation.CreateNote(childComplexity, args["input"].(*model.CreateNoteInput)), true
 
 	case "Mutation.createPerson":
 		if e.complexity.Mutation.CreatePerson == nil {
@@ -704,17 +722,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteCustomField(childComplexity, args["id"].(string)), true
 
-	case "Mutation.deleteNoteForPerson":
-		if e.complexity.Mutation.DeleteNoteForPerson == nil {
+	case "Mutation.deleteNote":
+		if e.complexity.Mutation.DeleteNote == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_deleteNoteForPerson_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_deleteNote_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteNoteForPerson(childComplexity, args["id"].(string)), true
+		return e.complexity.Mutation.DeleteNote(childComplexity, args["id"].(string)), true
 
 	case "Mutation.deletePerson":
 		if e.complexity.Mutation.DeletePerson == nil {
@@ -800,17 +818,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateCustomField(childComplexity, args["input"].(*model.UpdateCustomFieldInput)), true
 
-	case "Mutation.updateNoteForPerson":
-		if e.complexity.Mutation.UpdateNoteForPerson == nil {
+	case "Mutation.updateNote":
+		if e.complexity.Mutation.UpdateNote == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_updateNoteForPerson_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_updateNote_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateNoteForPerson(childComplexity, args["input"].(*model.UpdateNoteInput)), true
+		return e.complexity.Mutation.UpdateNote(childComplexity, args["input"].(*model.UpdateNoteInput)), true
 
 	case "Mutation.updatePerson":
 		if e.complexity.Mutation.UpdatePerson == nil {
@@ -847,6 +865,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateTemplateField(childComplexity, args["input"].(*model.UpdateTemplateFieldInput)), true
+
+	case "Note.color":
+		if e.complexity.Note.Color == nil {
+			break
+		}
+
+		return e.complexity.Note.Color(childComplexity), true
+
+	case "Note.company_id":
+		if e.complexity.Note.CompanyID == nil {
+			break
+		}
+
+		return e.complexity.Note.CompanyID(childComplexity), true
 
 	case "Note.content":
 		if e.complexity.Note.Content == nil {
@@ -1281,158 +1313,166 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 var sources = []*ast.Source{
 	{Name: "../schema/input.graphqls", Input: `# User
 input CreateUserInput {
-  provider: String!
-  uid: String!
-  name: String!
-  email: String!
-  image: String!
+    provider: String!
+    uid: String!
+    name: String!
+    email: String!
+    image: String!
 }
 
 # Auth
 input SignInInput {
-  provider: String!
-  uid: String!
-  name: String!
-  email: String!
-  image: String!
+    provider: String!
+    uid: String!
+    name: String!
+    email: String!
+    image: String!
 }
 
 # CompanyCustomTemplate
 input CreateTemplateInput {
-  name: String!
-  user_id: ID!
-  is_trash: Boolean
+    name: String!
+    user_id: ID!
+    is_trash: Boolean
 }
 input UpdateTemplateInput {
-  id: ID!
-  name: String
-  user_id: ID
-  is_trash: Boolean
+    id: ID!
+    name: String
+    user_id: ID
+    is_trash: Boolean
 }
 
 #CompanyCustomTemplateField
 input CreateTemplateFieldInput {
-  group_name: String!
-  label: String!
-  type: String!
-  template_id: ID!
-  user_id: ID!
+    group_name: String!
+    label: String!
+    type: String!
+    template_id: ID!
+    user_id: ID!
 }
 input UpdateTemplateFieldInput {
-  id: ID!
-  label: String
-  type: String
-  template_id: ID
+    id: ID!
+    label: String
+    type: String
+    template_id: ID
 }
 
 # Company
 input CreateCompanyInput {
-  name: String
-  tell: String
-  email: String
-  address: String
-  site_url: String
-  industry: String
-  employees_number: Float
-  is_pinned: Boolean
-  pinned_at: String
-  is_trash: Boolean
-  user_id: ID!
+    name: String
+    color: String
+    tell: String
+    email: String
+    address: String
+    site_url: String
+    industry: String
+    employees_number: Float
+    is_pinned: Boolean
+    pinned_at: String
+    is_trash: Boolean
+    user_id: ID!
 }
 input UpdateCompanyInput {
-  id: ID!
-  name: String
-  tell: String
-  email: String
-  address: String
-  site_url: String
-  industry: String
-  employees_number: Float
-  is_pinned: Boolean
-  pinned_at: String
-  is_trash: Boolean
+    id: ID!
+    name: String
+    color: String
+    tell: String
+    email: String
+    address: String
+    site_url: String
+    industry: String
+    employees_number: Float
+    is_pinned: Boolean
+    pinned_at: String
+    is_trash: Boolean
 }
 
 # CompanyCustomField
 input CreateCustomFieldInput {
-  group_name: String!
-  label: String!
-  value: String
-  type: String!
-  company_id: ID!
+    group_name: String!
+    label: String!
+    value: String
+    type: String!
+    company_id: ID!
 }
 input UpdateCustomFieldInput {
-  id: ID!
-  group_name: String
-  label: String
-  value: String
-  type: String
+    id: ID!
+    group_name: String
+    label: String
+    value: String
+    type: String
 }
 
 # Person
 input CreatePersonInput {
-  name: String
-  department: String
-  position: String
-  tell: Float
-  email: String
-  memo: String
-  is_trash: Boolean
-  company_id: ID!
-  user_id: ID!
+    name: String
+    department: String
+    position: String
+    tell: Float
+    email: String
+    memo: String
+    is_trash: Boolean
+    company_id: ID
+    user_id: ID!
 }
 input UpdatePersonInput {
-  id: ID!
-  name: String
-  department: String
-  position: String
-  tell: Float
-  email: String
-  memo: String
-  company_id: ID
-  is_trash: Boolean
+    id: ID!
+    name: String
+    department: String
+    position: String
+    tell: Float
+    email: String
+    memo: String
+    company_id: ID
+    is_trash: Boolean
 }
 
 # Note
 input CreateNoteInput {
-  title: String
-  content: String
-  is_pinned: Boolean
-  pinned_at: String
-  is_trash: Boolean
-  user_id: ID!
+    title: String
+    content: String
+    color: String
+    is_pinned: Boolean
+    pinned_at: String
+    is_trash: Boolean
+    company_id: ID
+    user_id: ID!
 }
 input UpdateNoteInput {
-  id: ID!
-  title: String
-  content: String
-  is_pinned: Boolean
-  pinned_at: String
-  is_trash: Boolean
+    id: ID!
+    title: String
+    content: String
+    color: String
+    is_pinned: Boolean
+    pinned_at: String
+    company_id: ID
+    is_trash: Boolean
 }
 
 # Calendar
 input CreateCalendarInput {
-  title: String
-  description: String
-  start_time: String
-  end_time: String
-  location: String
-  is_all_day: Boolean
-  is_from_google: Boolean
-  company_id: ID!
-  user_id: ID!
+    title: String
+    description: String
+    color: String
+    start_time: String
+    end_time: String
+    location: String
+    is_all_day: Boolean
+    is_from_google: Boolean
+    company_id: ID
+    user_id: ID!
 }
 input UpdateCalendarInput {
-  id: ID!
-  title: String
-  description: String
-  start_time: String
-  end_time: String
-  location: String
-  is_all_day: Boolean
-  is_from_google: Boolean
-  company_id: ID
+    id: ID!
+    title: String
+    description: String
+    color: String
+    start_time: String
+    end_time: String
+    location: String
+    is_all_day: Boolean
+    is_from_google: Boolean
+    company_id: ID
 }
 `, BuiltIn: false},
 	{Name: "../schema/mutation.graphqls", Input: `type Mutation {
@@ -1461,9 +1501,9 @@ input UpdateCalendarInput {
     updatePerson(input: UpdatePersonInput): Person
     deletePerson(id: ID!): Person
     # Note
-    createNoteForPerson(input: CreateNoteInput): Note
-    updateNoteForPerson(input: UpdateNoteInput): Note
-    deleteNoteForPerson(id: ID!): Note
+    createNote(input: CreateNoteInput): Note
+    updateNote(input: UpdateNoteInput): Note
+    deleteNote(id: ID!): Note
     # Calendar
     createCalendar(input: CreateCalendarInput): Calendar
     updateCalendar(input: UpdateCalendarInput): Calendar
@@ -1518,6 +1558,7 @@ type CompanyCustomTemplateField {
 type Company {
     id: ID!
     name: String
+    color: String
     tell: String
     email: String
     address: String
@@ -1553,7 +1594,7 @@ type Person {
     email: String
     memo: String
     is_trash: Boolean
-    company_id: ID!
+    company_id: ID
     user_id: ID!
     created_at: Time!
     updated_at: Time!
@@ -1563,9 +1604,11 @@ type Note {
     id: ID!
     title: String
     content: String
+    color: String
     is_pinned: Boolean
     pinned_at: String
     is_trash: Boolean
+    company_id: ID
     user_id: ID!
     created_at: Time!
     updated_at: Time!
@@ -1575,12 +1618,13 @@ type Calendar {
     id: ID!
     title: String
     description: String
+    color: String
     start_time: String
     end_time: String
     location: String
     is_all_day: Boolean
     is_from_google: Boolean
-    company_id: ID!
+    company_id: ID
     user_id: ID!
     created_at: Time!
     updated_at: Time!
@@ -1638,7 +1682,7 @@ func (ec *executionContext) field_Mutation_createCustomField_args(ctx context.Co
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createNoteForPerson_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createNote_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *model.CreateNoteInput
@@ -1758,7 +1802,7 @@ func (ec *executionContext) field_Mutation_deleteCustomField_args(ctx context.Co
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_deleteNoteForPerson_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_deleteNote_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -1878,7 +1922,7 @@ func (ec *executionContext) field_Mutation_updateCustomField_args(ctx context.Co
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_updateNoteForPerson_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_updateNote_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *model.UpdateNoteInput
@@ -2207,6 +2251,47 @@ func (ec *executionContext) fieldContext_Calendar_description(ctx context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _Calendar_color(ctx context.Context, field graphql.CollectedField, obj *model.Calendar) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Calendar_color(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Color, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Calendar_color(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Calendar",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Calendar_start_time(ctx context.Context, field graphql.CollectedField, obj *model.Calendar) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Calendar_start_time(ctx, field)
 	if err != nil {
@@ -2433,14 +2518,11 @@ func (ec *executionContext) _Calendar_company_id(ctx context.Context, field grap
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Calendar_company_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2661,6 +2743,47 @@ func (ec *executionContext) _Company_name(ctx context.Context, field graphql.Col
 }
 
 func (ec *executionContext) fieldContext_Company_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Company",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Company_color(ctx context.Context, field graphql.CollectedField, obj *model.Company) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Company_color(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Color, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Company_color(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Company",
 		Field:      field,
@@ -4753,6 +4876,8 @@ func (ec *executionContext) fieldContext_Mutation_createCompany(ctx context.Cont
 				return ec.fieldContext_Company_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Company_name(ctx, field)
+			case "color":
+				return ec.fieldContext_Company_color(ctx, field)
 			case "tell":
 				return ec.fieldContext_Company_tell(ctx, field)
 			case "email":
@@ -4837,6 +4962,8 @@ func (ec *executionContext) fieldContext_Mutation_updateCompany(ctx context.Cont
 				return ec.fieldContext_Company_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Company_name(ctx, field)
+			case "color":
+				return ec.fieldContext_Company_color(ctx, field)
 			case "tell":
 				return ec.fieldContext_Company_tell(ctx, field)
 			case "email":
@@ -4921,6 +5048,8 @@ func (ec *executionContext) fieldContext_Mutation_deleteCompany(ctx context.Cont
 				return ec.fieldContext_Company_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Company_name(ctx, field)
+			case "color":
+				return ec.fieldContext_Company_color(ctx, field)
 			case "tell":
 				return ec.fieldContext_Company_tell(ctx, field)
 			case "email":
@@ -5409,8 +5538,8 @@ func (ec *executionContext) fieldContext_Mutation_deletePerson(ctx context.Conte
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_createNoteForPerson(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_createNoteForPerson(ctx, field)
+func (ec *executionContext) _Mutation_createNote(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createNote(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -5423,7 +5552,7 @@ func (ec *executionContext) _Mutation_createNoteForPerson(ctx context.Context, f
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateNoteForPerson(rctx, fc.Args["input"].(*model.CreateNoteInput))
+		return ec.resolvers.Mutation().CreateNote(rctx, fc.Args["input"].(*model.CreateNoteInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5437,7 +5566,7 @@ func (ec *executionContext) _Mutation_createNoteForPerson(ctx context.Context, f
 	return ec.marshalONote2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐNote(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_createNoteForPerson(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_createNote(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -5451,12 +5580,16 @@ func (ec *executionContext) fieldContext_Mutation_createNoteForPerson(ctx contex
 				return ec.fieldContext_Note_title(ctx, field)
 			case "content":
 				return ec.fieldContext_Note_content(ctx, field)
+			case "color":
+				return ec.fieldContext_Note_color(ctx, field)
 			case "is_pinned":
 				return ec.fieldContext_Note_is_pinned(ctx, field)
 			case "pinned_at":
 				return ec.fieldContext_Note_pinned_at(ctx, field)
 			case "is_trash":
 				return ec.fieldContext_Note_is_trash(ctx, field)
+			case "company_id":
+				return ec.fieldContext_Note_company_id(ctx, field)
 			case "user_id":
 				return ec.fieldContext_Note_user_id(ctx, field)
 			case "created_at":
@@ -5474,15 +5607,15 @@ func (ec *executionContext) fieldContext_Mutation_createNoteForPerson(ctx contex
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_createNoteForPerson_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_createNote_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_updateNoteForPerson(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_updateNoteForPerson(ctx, field)
+func (ec *executionContext) _Mutation_updateNote(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateNote(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -5495,7 +5628,7 @@ func (ec *executionContext) _Mutation_updateNoteForPerson(ctx context.Context, f
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateNoteForPerson(rctx, fc.Args["input"].(*model.UpdateNoteInput))
+		return ec.resolvers.Mutation().UpdateNote(rctx, fc.Args["input"].(*model.UpdateNoteInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5509,7 +5642,7 @@ func (ec *executionContext) _Mutation_updateNoteForPerson(ctx context.Context, f
 	return ec.marshalONote2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐNote(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_updateNoteForPerson(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_updateNote(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -5523,12 +5656,16 @@ func (ec *executionContext) fieldContext_Mutation_updateNoteForPerson(ctx contex
 				return ec.fieldContext_Note_title(ctx, field)
 			case "content":
 				return ec.fieldContext_Note_content(ctx, field)
+			case "color":
+				return ec.fieldContext_Note_color(ctx, field)
 			case "is_pinned":
 				return ec.fieldContext_Note_is_pinned(ctx, field)
 			case "pinned_at":
 				return ec.fieldContext_Note_pinned_at(ctx, field)
 			case "is_trash":
 				return ec.fieldContext_Note_is_trash(ctx, field)
+			case "company_id":
+				return ec.fieldContext_Note_company_id(ctx, field)
 			case "user_id":
 				return ec.fieldContext_Note_user_id(ctx, field)
 			case "created_at":
@@ -5546,15 +5683,15 @@ func (ec *executionContext) fieldContext_Mutation_updateNoteForPerson(ctx contex
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_updateNoteForPerson_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_updateNote_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_deleteNoteForPerson(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_deleteNoteForPerson(ctx, field)
+func (ec *executionContext) _Mutation_deleteNote(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteNote(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -5567,7 +5704,7 @@ func (ec *executionContext) _Mutation_deleteNoteForPerson(ctx context.Context, f
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteNoteForPerson(rctx, fc.Args["id"].(string))
+		return ec.resolvers.Mutation().DeleteNote(rctx, fc.Args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5581,7 +5718,7 @@ func (ec *executionContext) _Mutation_deleteNoteForPerson(ctx context.Context, f
 	return ec.marshalONote2ᚖgiftjobᚑbackendᚋgraphᚋmodelᚐNote(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_deleteNoteForPerson(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_deleteNote(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -5595,12 +5732,16 @@ func (ec *executionContext) fieldContext_Mutation_deleteNoteForPerson(ctx contex
 				return ec.fieldContext_Note_title(ctx, field)
 			case "content":
 				return ec.fieldContext_Note_content(ctx, field)
+			case "color":
+				return ec.fieldContext_Note_color(ctx, field)
 			case "is_pinned":
 				return ec.fieldContext_Note_is_pinned(ctx, field)
 			case "pinned_at":
 				return ec.fieldContext_Note_pinned_at(ctx, field)
 			case "is_trash":
 				return ec.fieldContext_Note_is_trash(ctx, field)
+			case "company_id":
+				return ec.fieldContext_Note_company_id(ctx, field)
 			case "user_id":
 				return ec.fieldContext_Note_user_id(ctx, field)
 			case "created_at":
@@ -5618,7 +5759,7 @@ func (ec *executionContext) fieldContext_Mutation_deleteNoteForPerson(ctx contex
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_deleteNoteForPerson_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_deleteNote_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -5667,6 +5808,8 @@ func (ec *executionContext) fieldContext_Mutation_createCalendar(ctx context.Con
 				return ec.fieldContext_Calendar_title(ctx, field)
 			case "description":
 				return ec.fieldContext_Calendar_description(ctx, field)
+			case "color":
+				return ec.fieldContext_Calendar_color(ctx, field)
 			case "start_time":
 				return ec.fieldContext_Calendar_start_time(ctx, field)
 			case "end_time":
@@ -5745,6 +5888,8 @@ func (ec *executionContext) fieldContext_Mutation_updateCalendar(ctx context.Con
 				return ec.fieldContext_Calendar_title(ctx, field)
 			case "description":
 				return ec.fieldContext_Calendar_description(ctx, field)
+			case "color":
+				return ec.fieldContext_Calendar_color(ctx, field)
 			case "start_time":
 				return ec.fieldContext_Calendar_start_time(ctx, field)
 			case "end_time":
@@ -5823,6 +5968,8 @@ func (ec *executionContext) fieldContext_Mutation_deleteCalendar(ctx context.Con
 				return ec.fieldContext_Calendar_title(ctx, field)
 			case "description":
 				return ec.fieldContext_Calendar_description(ctx, field)
+			case "color":
+				return ec.fieldContext_Calendar_color(ctx, field)
 			case "start_time":
 				return ec.fieldContext_Calendar_start_time(ctx, field)
 			case "end_time":
@@ -5985,6 +6132,47 @@ func (ec *executionContext) fieldContext_Note_content(ctx context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _Note_color(ctx context.Context, field graphql.CollectedField, obj *model.Note) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Note_color(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Color, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Note_color(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Note",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Note_is_pinned(ctx context.Context, field graphql.CollectedField, obj *model.Note) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Note_is_pinned(ctx, field)
 	if err != nil {
@@ -6103,6 +6291,47 @@ func (ec *executionContext) fieldContext_Note_is_trash(ctx context.Context, fiel
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Note_company_id(ctx context.Context, field graphql.CollectedField, obj *model.Note) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Note_company_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CompanyID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Note_company_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Note",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
 		},
 	}
 	return fc, nil
@@ -6592,14 +6821,11 @@ func (ec *executionContext) _Person_company_id(ctx context.Context, field graphq
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Person_company_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6933,6 +7159,8 @@ func (ec *executionContext) fieldContext_Query_getCompany(ctx context.Context, f
 				return ec.fieldContext_Company_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Company_name(ctx, field)
+			case "color":
+				return ec.fieldContext_Company_color(ctx, field)
 			case "tell":
 				return ec.fieldContext_Company_tell(ctx, field)
 			case "email":
@@ -7097,12 +7325,16 @@ func (ec *executionContext) fieldContext_Query_getNote(ctx context.Context, fiel
 				return ec.fieldContext_Note_title(ctx, field)
 			case "content":
 				return ec.fieldContext_Note_content(ctx, field)
+			case "color":
+				return ec.fieldContext_Note_color(ctx, field)
 			case "is_pinned":
 				return ec.fieldContext_Note_is_pinned(ctx, field)
 			case "pinned_at":
 				return ec.fieldContext_Note_pinned_at(ctx, field)
 			case "is_trash":
 				return ec.fieldContext_Note_is_trash(ctx, field)
+			case "company_id":
+				return ec.fieldContext_Note_company_id(ctx, field)
 			case "user_id":
 				return ec.fieldContext_Note_user_id(ctx, field)
 			case "created_at":
@@ -7169,6 +7401,8 @@ func (ec *executionContext) fieldContext_Query_getCalendar(ctx context.Context, 
 				return ec.fieldContext_Calendar_title(ctx, field)
 			case "description":
 				return ec.fieldContext_Calendar_description(ctx, field)
+			case "color":
+				return ec.fieldContext_Calendar_color(ctx, field)
 			case "start_time":
 				return ec.fieldContext_Calendar_start_time(ctx, field)
 			case "end_time":
@@ -7726,6 +7960,8 @@ func (ec *executionContext) fieldContext_User_companies(ctx context.Context, fie
 				return ec.fieldContext_Company_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Company_name(ctx, field)
+			case "color":
+				return ec.fieldContext_Company_color(ctx, field)
 			case "tell":
 				return ec.fieldContext_Company_tell(ctx, field)
 			case "email":
@@ -7856,12 +8092,16 @@ func (ec *executionContext) fieldContext_User_Notes(ctx context.Context, field g
 				return ec.fieldContext_Note_title(ctx, field)
 			case "content":
 				return ec.fieldContext_Note_content(ctx, field)
+			case "color":
+				return ec.fieldContext_Note_color(ctx, field)
 			case "is_pinned":
 				return ec.fieldContext_Note_is_pinned(ctx, field)
 			case "pinned_at":
 				return ec.fieldContext_Note_pinned_at(ctx, field)
 			case "is_trash":
 				return ec.fieldContext_Note_is_trash(ctx, field)
+			case "company_id":
+				return ec.fieldContext_Note_company_id(ctx, field)
 			case "user_id":
 				return ec.fieldContext_Note_user_id(ctx, field)
 			case "created_at":
@@ -7917,6 +8157,8 @@ func (ec *executionContext) fieldContext_User_Calendars(ctx context.Context, fie
 				return ec.fieldContext_Calendar_title(ctx, field)
 			case "description":
 				return ec.fieldContext_Calendar_description(ctx, field)
+			case "color":
+				return ec.fieldContext_Calendar_color(ctx, field)
 			case "start_time":
 				return ec.fieldContext_Calendar_start_time(ctx, field)
 			case "end_time":
@@ -9789,7 +10031,7 @@ func (ec *executionContext) unmarshalInputCreateCalendarInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"title", "description", "start_time", "end_time", "location", "is_all_day", "is_from_google", "company_id", "user_id"}
+	fieldsInOrder := [...]string{"title", "description", "color", "start_time", "end_time", "location", "is_all_day", "is_from_google", "company_id", "user_id"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -9814,6 +10056,15 @@ func (ec *executionContext) unmarshalInputCreateCalendarInput(ctx context.Contex
 				return it, err
 			}
 			it.Description = data
+		case "color":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("color"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Color = data
 		case "start_time":
 			var err error
 
@@ -9863,7 +10114,7 @@ func (ec *executionContext) unmarshalInputCreateCalendarInput(ctx context.Contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("company_id"))
-			data, err := ec.unmarshalNID2string(ctx, v)
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9890,7 +10141,7 @@ func (ec *executionContext) unmarshalInputCreateCompanyInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "tell", "email", "address", "site_url", "industry", "employees_number", "is_pinned", "pinned_at", "is_trash", "user_id"}
+	fieldsInOrder := [...]string{"name", "color", "tell", "email", "address", "site_url", "industry", "employees_number", "is_pinned", "pinned_at", "is_trash", "user_id"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -9906,6 +10157,15 @@ func (ec *executionContext) unmarshalInputCreateCompanyInput(ctx context.Context
 				return it, err
 			}
 			it.Name = data
+		case "color":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("color"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Color = data
 		case "tell":
 			var err error
 
@@ -10074,7 +10334,7 @@ func (ec *executionContext) unmarshalInputCreateNoteInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"title", "content", "is_pinned", "pinned_at", "is_trash", "user_id"}
+	fieldsInOrder := [...]string{"title", "content", "color", "is_pinned", "pinned_at", "is_trash", "company_id", "user_id"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -10099,6 +10359,15 @@ func (ec *executionContext) unmarshalInputCreateNoteInput(ctx context.Context, o
 				return it, err
 			}
 			it.Content = data
+		case "color":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("color"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Color = data
 		case "is_pinned":
 			var err error
 
@@ -10126,6 +10395,15 @@ func (ec *executionContext) unmarshalInputCreateNoteInput(ctx context.Context, o
 				return it, err
 			}
 			it.IsTrash = data
+		case "company_id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("company_id"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CompanyID = data
 		case "user_id":
 			var err error
 
@@ -10222,7 +10500,7 @@ func (ec *executionContext) unmarshalInputCreatePersonInput(ctx context.Context,
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("company_id"))
-			data, err := ec.unmarshalNID2string(ctx, v)
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -10491,7 +10769,7 @@ func (ec *executionContext) unmarshalInputUpdateCalendarInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "title", "description", "start_time", "end_time", "location", "is_all_day", "is_from_google", "company_id"}
+	fieldsInOrder := [...]string{"id", "title", "description", "color", "start_time", "end_time", "location", "is_all_day", "is_from_google", "company_id"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -10525,6 +10803,15 @@ func (ec *executionContext) unmarshalInputUpdateCalendarInput(ctx context.Contex
 				return it, err
 			}
 			it.Description = data
+		case "color":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("color"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Color = data
 		case "start_time":
 			var err error
 
@@ -10592,7 +10879,7 @@ func (ec *executionContext) unmarshalInputUpdateCompanyInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "name", "tell", "email", "address", "site_url", "industry", "employees_number", "is_pinned", "pinned_at", "is_trash"}
+	fieldsInOrder := [...]string{"id", "name", "color", "tell", "email", "address", "site_url", "industry", "employees_number", "is_pinned", "pinned_at", "is_trash"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -10617,6 +10904,15 @@ func (ec *executionContext) unmarshalInputUpdateCompanyInput(ctx context.Context
 				return it, err
 			}
 			it.Name = data
+		case "color":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("color"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Color = data
 		case "tell":
 			var err error
 
@@ -10776,7 +11072,7 @@ func (ec *executionContext) unmarshalInputUpdateNoteInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "title", "content", "is_pinned", "pinned_at", "is_trash"}
+	fieldsInOrder := [...]string{"id", "title", "content", "color", "is_pinned", "pinned_at", "company_id", "is_trash"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -10810,6 +11106,15 @@ func (ec *executionContext) unmarshalInputUpdateNoteInput(ctx context.Context, o
 				return it, err
 			}
 			it.Content = data
+		case "color":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("color"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Color = data
 		case "is_pinned":
 			var err error
 
@@ -10828,6 +11133,15 @@ func (ec *executionContext) unmarshalInputUpdateNoteInput(ctx context.Context, o
 				return it, err
 			}
 			it.PinnedAt = data
+		case "company_id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("company_id"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CompanyID = data
 		case "is_trash":
 			var err error
 
@@ -11084,6 +11398,8 @@ func (ec *executionContext) _Calendar(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = ec._Calendar_title(ctx, field, obj)
 		case "description":
 			out.Values[i] = ec._Calendar_description(ctx, field, obj)
+		case "color":
+			out.Values[i] = ec._Calendar_color(ctx, field, obj)
 		case "start_time":
 			out.Values[i] = ec._Calendar_start_time(ctx, field, obj)
 		case "end_time":
@@ -11096,9 +11412,6 @@ func (ec *executionContext) _Calendar(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = ec._Calendar_is_from_google(ctx, field, obj)
 		case "company_id":
 			out.Values[i] = ec._Calendar_company_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "user_id":
 			out.Values[i] = ec._Calendar_user_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -11155,6 +11468,8 @@ func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "name":
 			out.Values[i] = ec._Company_name(ctx, field, obj)
+		case "color":
+			out.Values[i] = ec._Company_color(ctx, field, obj)
 		case "tell":
 			out.Values[i] = ec._Company_tell(ctx, field, obj)
 		case "email":
@@ -11501,17 +11816,17 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deletePerson(ctx, field)
 			})
-		case "createNoteForPerson":
+		case "createNote":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_createNoteForPerson(ctx, field)
+				return ec._Mutation_createNote(ctx, field)
 			})
-		case "updateNoteForPerson":
+		case "updateNote":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_updateNoteForPerson(ctx, field)
+				return ec._Mutation_updateNote(ctx, field)
 			})
-		case "deleteNoteForPerson":
+		case "deleteNote":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_deleteNoteForPerson(ctx, field)
+				return ec._Mutation_deleteNote(ctx, field)
 			})
 		case "createCalendar":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -11568,12 +11883,16 @@ func (ec *executionContext) _Note(ctx context.Context, sel ast.SelectionSet, obj
 			out.Values[i] = ec._Note_title(ctx, field, obj)
 		case "content":
 			out.Values[i] = ec._Note_content(ctx, field, obj)
+		case "color":
+			out.Values[i] = ec._Note_color(ctx, field, obj)
 		case "is_pinned":
 			out.Values[i] = ec._Note_is_pinned(ctx, field, obj)
 		case "pinned_at":
 			out.Values[i] = ec._Note_pinned_at(ctx, field, obj)
 		case "is_trash":
 			out.Values[i] = ec._Note_is_trash(ctx, field, obj)
+		case "company_id":
+			out.Values[i] = ec._Note_company_id(ctx, field, obj)
 		case "user_id":
 			out.Values[i] = ec._Note_user_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -11644,9 +11963,6 @@ func (ec *executionContext) _Person(ctx context.Context, sel ast.SelectionSet, o
 			out.Values[i] = ec._Person_is_trash(ctx, field, obj)
 		case "company_id":
 			out.Values[i] = ec._Person_company_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "user_id":
 			out.Values[i] = ec._Person_user_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
