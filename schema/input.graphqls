@@ -95,7 +95,7 @@ input CreatePersonInput {
     name: String
     department: String
     position: String
-    tell: Float
+    tell: String
     email: String
     memo: String
     is_trash: Boolean
@@ -107,7 +107,7 @@ input UpdatePersonInput {
     name: String
     department: String
     position: String
-    tell: Float
+    tell: String
     email: String
     memo: String
     company_id: ID

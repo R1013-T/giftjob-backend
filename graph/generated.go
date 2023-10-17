@@ -1408,7 +1408,7 @@ input CreatePersonInput {
     name: String
     department: String
     position: String
-    tell: Float
+    tell: String
     email: String
     memo: String
     is_trash: Boolean
@@ -1420,7 +1420,7 @@ input UpdatePersonInput {
     name: String
     department: String
     position: String
-    tell: Float
+    tell: String
     email: String
     memo: String
     company_id: ID
@@ -1590,7 +1590,7 @@ type Person {
     name: String
     department: String
     position: String
-    tell: Float
+    tell: String
     email: String
     memo: String
     is_trash: Boolean
@@ -6659,9 +6659,9 @@ func (ec *executionContext) _Person_tell(ctx context.Context, field graphql.Coll
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*float64)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Person_tell(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6671,7 +6671,7 @@ func (ec *executionContext) fieldContext_Person_tell(ctx context.Context, field 
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Float does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -10464,7 +10464,7 @@ func (ec *executionContext) unmarshalInputCreatePersonInput(ctx context.Context,
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tell"))
-			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11211,7 +11211,7 @@ func (ec *executionContext) unmarshalInputUpdatePersonInput(ctx context.Context,
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tell"))
-			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}

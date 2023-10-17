@@ -119,15 +119,15 @@ type CreateNoteInput struct {
 }
 
 type CreatePersonInput struct {
-	Name       *string  `json:"name,omitempty"`
-	Department *string  `json:"department,omitempty"`
-	Position   *string  `json:"position,omitempty"`
-	Tell       *float64 `json:"tell,omitempty"`
-	Email      *string  `json:"email,omitempty"`
-	Memo       *string  `json:"memo,omitempty"`
-	IsTrash    *bool    `json:"is_trash,omitempty"`
-	CompanyID  *string  `json:"company_id,omitempty"`
-	UserID     string   `json:"user_id"`
+	Name       *string `json:"name,omitempty"`
+	Department *string `json:"department,omitempty"`
+	Position   *string `json:"position,omitempty"`
+	Tell       *string `json:"tell,omitempty"`
+	Email      *string `json:"email,omitempty"`
+	Memo       *string `json:"memo,omitempty"`
+	IsTrash    *bool   `json:"is_trash,omitempty"`
+	CompanyID  *string `json:"company_id,omitempty"`
+	UserID     string  `json:"user_id"`
 }
 
 type CreateTemplateFieldInput struct {
@@ -171,7 +171,7 @@ type Person struct {
 	Name       *string   `json:"name,omitempty"`
 	Department *string   `json:"department,omitempty"`
 	Position   *string   `json:"position,omitempty"`
-	Tell       *float64  `json:"tell,omitempty"`
+	Tell       *string   `json:"tell,omitempty"`
 	Email      *string   `json:"email,omitempty"`
 	Memo       *string   `json:"memo,omitempty"`
 	IsTrash    *bool     `json:"is_trash,omitempty"`
@@ -237,15 +237,15 @@ type UpdateNoteInput struct {
 }
 
 type UpdatePersonInput struct {
-	ID         string   `json:"id"`
-	Name       *string  `json:"name,omitempty"`
-	Department *string  `json:"department,omitempty"`
-	Position   *string  `json:"position,omitempty"`
-	Tell       *float64 `json:"tell,omitempty"`
-	Email      *string  `json:"email,omitempty"`
-	Memo       *string  `json:"memo,omitempty"`
-	CompanyID  *string  `json:"company_id,omitempty"`
-	IsTrash    *bool    `json:"is_trash,omitempty"`
+	ID         string  `json:"id"`
+	Name       *string `json:"name,omitempty"`
+	Department *string `json:"department,omitempty"`
+	Position   *string `json:"position,omitempty"`
+	Tell       *string `json:"tell,omitempty"`
+	Email      *string `json:"email,omitempty"`
+	Memo       *string `json:"memo,omitempty"`
+	CompanyID  *string `json:"company_id,omitempty"`
+	IsTrash    *bool   `json:"is_trash,omitempty"`
 }
 
 type UpdateTemplateFieldInput struct {
